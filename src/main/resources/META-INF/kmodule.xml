@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<kmodule xmlns="http://www.drools.org/xsd/kmodule">
+    <kbase name="matcher-base" default="true" eventProcessingMode="cloud" equalsBehavior="equality" packages="com.suse.matcher.deduction.rules">
+        <ksession name="matcher-session" type="stateful" default="true" clockType="realtime" beliefSystem="simple">
+            <consoleLogger name="logger" />
+        </ksession>
+    </kbase>
+</kmodule>

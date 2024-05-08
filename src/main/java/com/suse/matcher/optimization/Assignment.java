@@ -3,8 +3,9 @@ package com.suse.matcher.optimization;
 import com.suse.matcher.deduction.facts.PotentialMatch;
 
 import org.optaplanner.core.api.domain.solution.PlanningEntityCollectionProperty;
+import org.optaplanner.core.api.domain.solution.PlanningScore;
 import org.optaplanner.core.api.domain.solution.PlanningSolution;
-import org.optaplanner.core.api.domain.solution.Solution;
+import org.optaplanner.core.api.domain.solution.drools.ProblemFactCollectionProperty;
 import org.optaplanner.core.api.domain.valuerange.ValueRangeProvider;
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 
@@ -19,15 +20,17 @@ import java.util.stream.Stream;
  * {@link Match}es, as produced by OptaPlanner.
  */
 @PlanningSolution
-public class Assignment implements Solution<HardSoftScore> {
+public class Assignment {
 
     /** Score of this assignment. */
+    @PlanningScore
     private HardSoftScore score;
 
     /** Match objects that the OptaPlanner will try to assign Kinds to. */
     private List<Match> matches;
 
     /** Other problem facts passed by Drools. */
+    @ProblemFactCollectionProperty
     private Collection<Object> problemFacts;
 
     /** Maps every {@link Match} id to all conflicting sets where it appears. */
@@ -58,10 +61,6 @@ public class Assignment implements Solution<HardSoftScore> {
         sortedPotentialMatchesCache = sortedPotentialMatchesIn;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public Collection<Object> getProblemFacts() {
         // those will be inserted in the private OptaPlanner Drools instance
         // so that they can be used in score rules
@@ -91,20 +90,8 @@ public class Assignment implements Solution<HardSoftScore> {
             .map(o -> (T)o);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public HardSoftScore getScore() {
         return score;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setScore(HardSoftScore scoreIn) {
-        score = scoreIn;
     }
 
     /**

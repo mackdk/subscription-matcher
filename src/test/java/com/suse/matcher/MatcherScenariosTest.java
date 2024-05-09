@@ -188,7 +188,7 @@ class MatcherScenariosTest {
             throw new IllegalStateException("Unable to create directory structure: " + outputPath);
         }
 
-        return new OutputWriter(Optional.of(outputPath.toString()), Optional.of(','));
+        return new OutputWriter(outputPath, ',');
     }
 
     /**

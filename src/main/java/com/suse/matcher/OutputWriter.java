@@ -19,7 +19,6 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -56,7 +55,7 @@ public class OutputWriter {
     private static final String CSV_MESSAGE_REPORT_FILE = "message_report.csv";
 
     /** The output directory. */
-    private final String outputDirectory;
+    private final Path outputDirectory;
 
     /** The CSV format. */
     private CSVFormat csvFormat;
@@ -68,10 +67,9 @@ public class OutputWriter {
      * as default
      * @param delimiter an optional CSV delimiter. If empty, comma is used as default
      */
-    public OutputWriter(Optional<String> outputDirectoryIn, Optional<Character> delimiter) {
-        outputDirectory = outputDirectoryIn.orElse(".");
-        csvFormat = CSVFormat.EXCEL;
-        delimiter.ifPresent(character -> csvFormat = csvFormat.withDelimiter(character));
+    public OutputWriter(Path outputDirectoryIn, char delimiter) {
+        outputDirectory = outputDirectoryIn;
+        csvFormat = CSVFormat.EXCEL.withDelimiter(delimiter);
     }
 
     /**
@@ -88,7 +86,7 @@ public class OutputWriter {
         writeCSVMessageReport(assignment);
 
         try {
-            Files.deleteIfExists(Path.of(outputDirectory, JSON_OUTPUT_ALL_FILE));
+            Files.deleteIfExists(outputDirectory.resolve(JSON_OUTPUT_ALL_FILE));
         }
         catch (Exception ex) {
             LOGGER.error("Unable to delete file {} in directory {}: {}", JSON_OUTPUT_ALL_FILE, outputDirectory, ex.getMessage());
@@ -98,7 +96,7 @@ public class OutputWriter {
     }
 
     private void writeAllFacts(Assignment assignment) {
-        try (PrintWriter writer = new PrintWriter(new File(outputDirectory, JSON_OUTPUT_ALL_FILE))) {
+        try (PrintWriter writer = new PrintWriter(outputDirectory.resolve(JSON_OUTPUT_ALL_FILE).toFile())) {
             JsonIO io = new JsonIO();
             writer.write(io.toJson(assignment));
         }
@@ -114,7 +112,7 @@ public class OutputWriter {
      * @throws IOException Signals that an I/O exception has occurred.
      */
     public void writeJsonInput(String input) throws IOException {
-        Files.writeString(Path.of(outputDirectory, JSON_INPUT_FILE), input, Charset.defaultCharset());
+        Files.writeString(outputDirectory.resolve(JSON_INPUT_FILE), input, Charset.defaultCharset());
     }
 
     /**
@@ -124,7 +122,7 @@ public class OutputWriter {
      * @throws FileNotFoundException if the output directory was not found
      */
     public void writeJsonOutput(Assignment assignment) throws FileNotFoundException {
-        try (PrintWriter writer = new PrintWriter(new File(outputDirectory, JSON_OUTPUT_FILE))) {
+        try (PrintWriter writer = new PrintWriter(outputDirectory.resolve(JSON_OUTPUT_FILE).toFile())) {
             JsonIO io = new JsonIO();
             writer.write(io.toJson(FactConverter.convertToOutput(assignment)));
         }
@@ -186,7 +184,7 @@ public class OutputWriter {
         csvFormat = csvFormat.withHeader(CSVOutputSubscription.CSV_HEADER);
 
         // write CSV file
-        try (FileWriter writer = new FileWriter(new File(outputDirectory, CSV_SUBSCRIPTION_REPORT_FILE));
+        try (FileWriter writer = new FileWriter(outputDirectory.resolve(CSV_SUBSCRIPTION_REPORT_FILE).toFile());
             CSVPrinter printer = new CSVPrinter(writer, csvFormat)) {
             for (Map.Entry<Long, CSVOutputSubscription> item : outsubs.entrySet()) {
                 printer.printRecord(item.getValue().getCSVRow());
@@ -220,7 +218,7 @@ public class OutputWriter {
         csvFormat = csvFormat.withHeader(CSVOutputUnmatchedProduct.CSV_HEADER);
 
         // write CSV file
-        try (FileWriter writer = new FileWriter(new File(outputDirectory, CSV_UNMATCHED_PRODUCT_REPORT_FILE));
+        try (FileWriter writer = new FileWriter(outputDirectory.resolve(CSV_UNMATCHED_PRODUCT_REPORT_FILE).toFile());
              CSVPrinter printer = new CSVPrinter(writer, csvFormat)) {
             // create map of product id -> set of systems ids with this product and filter out successful matches
             Map<Long, Set<Long>> unmatchedProductSystems = installedProducts.stream()
@@ -269,7 +267,7 @@ public class OutputWriter {
         csvFormat = csvFormat.withHeader(CSVOutputMessage.CSV_HEADER);
 
         // write CSV file
-        try (FileWriter writer = new FileWriter(new File(outputDirectory, CSV_MESSAGE_REPORT_FILE));
+        try (FileWriter writer = new FileWriter(outputDirectory.resolve(CSV_MESSAGE_REPORT_FILE).toFile());
                 CSVPrinter printer = new CSVPrinter(writer, csvFormat)) {
 
             List<Message> messages = assignment.getProblemFactStream(Message.class)

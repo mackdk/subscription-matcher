@@ -58,7 +58,7 @@ public class OutputWriter {
     private final Path outputDirectory;
 
     /** The CSV format. */
-    private CSVFormat csvFormat;
+    private final CSVFormat baseFormat;
 
     /**
      * Instantiates a new writer.
@@ -69,7 +69,9 @@ public class OutputWriter {
      */
     public OutputWriter(Path outputDirectoryIn, char delimiter) {
         outputDirectory = outputDirectoryIn;
-        csvFormat = CSVFormat.EXCEL.withDelimiter(delimiter);
+        baseFormat = CSVFormat.EXCEL.builder()
+            .setDelimiter(delimiter)
+            .build();
     }
 
     /**
@@ -180,8 +182,10 @@ public class OutputWriter {
             }
         });
 
-        // prepare header
-        csvFormat = csvFormat.withHeader(CSVOutputSubscription.CSV_HEADER);
+        // prepare the format
+        CSVFormat csvFormat = baseFormat.builder()
+            .setHeader(CSVOutputSubscription.getHeaders())
+            .build();
 
         // write CSV file
         try (FileWriter writer = new FileWriter(outputDirectory.resolve(CSV_SUBSCRIPTION_REPORT_FILE).toFile());
@@ -214,8 +218,10 @@ public class OutputWriter {
             matchMap.put(Pair.of(match.getSystemId(), match.getProductId()), match);
         }
 
-        // prepare header
-        csvFormat = csvFormat.withHeader(CSVOutputUnmatchedProduct.CSV_HEADER);
+        // prepare the format
+        CSVFormat csvFormat = baseFormat.builder()
+            .setHeader(CSVOutputUnmatchedProduct.getHeaders())
+            .build();
 
         // write CSV file
         try (FileWriter writer = new FileWriter(outputDirectory.resolve(CSV_UNMATCHED_PRODUCT_REPORT_FILE).toFile());
@@ -263,8 +269,10 @@ public class OutputWriter {
      * @throws IOException if an I/O error occurs
      */
     public void writeCSVMessageReport(Assignment assignment) throws IOException {
-        // prepare header
-        csvFormat = csvFormat.withHeader(CSVOutputMessage.CSV_HEADER);
+        // prepare the format
+        CSVFormat csvFormat = baseFormat.builder()
+            .setHeader(CSVOutputMessage.getHeaders())
+            .build();
 
         // write CSV file
         try (FileWriter writer = new FileWriter(outputDirectory.resolve(CSV_MESSAGE_REPORT_FILE).toFile());

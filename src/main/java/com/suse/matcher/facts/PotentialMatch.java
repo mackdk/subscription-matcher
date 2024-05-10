@@ -21,19 +21,19 @@ import org.kie.api.definition.type.PropertyReactive;
 public class PotentialMatch implements Comparable<PotentialMatch> {
 
     /** The system id. */
-    public long systemId;
+    private final long systemId;
 
     /** The product id. */
-    public long productId;
+    private final long productId;
 
     /** The subscription id. */
-    public long subscriptionId;
-
-    /** The id of the cent group used in this match. More matches can share same cent group. */
-    public int centGroupId;
+    private final long subscriptionId;
 
     /** The group id. */
-    public int groupId;
+    private final int groupId;
+
+    /** The id of the cent group used in this match. More matches can share same cent group. */
+    private int centGroupId;
 
     /**
      * Standard constructor.

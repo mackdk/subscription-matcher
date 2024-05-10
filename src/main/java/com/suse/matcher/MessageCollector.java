@@ -36,13 +36,13 @@ public class MessageCollector {
         Collection<Message> messages = new LinkedList<>();
         pinnedMatchFacts
             .filter(pin -> confirmedMatchFacts.stream() // filter unmatched pins
-                    .noneMatch(m -> Objects.equals(m.getSubscriptionId(), pin.subscriptionId) &&
-                        Objects.equals(m.getSystemId(), pin.systemId))
+                    .noneMatch(m -> Objects.equals(m.getSubscriptionId(), pin.getSubscriptionId()) &&
+                        Objects.equals(m.getSystemId(), pin.getSystemId()))
             )
             .forEach(unmatchedPin -> {
                 Message message = new Message(Message.Level.INFO, "unsatisfied_pinned_match", new TreeMap<>(Map.of(
-                    "system_id", unmatchedPin.systemId.toString(),
-                    "subscription_id", unmatchedPin.subscriptionId.toString()
+                    "system_id", String.valueOf(unmatchedPin.getSystemId()),
+                    "subscription_id", String.valueOf(unmatchedPin.getSubscriptionId())
                 )));
                 messages.add(message);
             });

@@ -63,7 +63,7 @@ public class Matcher {
             matches.forEach(m -> {
                 LOGGER.trace(m.toString());
                 getPotentialMatches(deducedFacts)
-                    .filter(p -> p.groupId == m.id)
+                    .filter(p -> p.getGroupId() == m.getId())
                     .sorted()
                     .map(o -> o.toString())
                     .forEach(s -> LOGGER.trace(s));
@@ -96,10 +96,10 @@ public class Matcher {
 
     private List<Match> getMatches(Collection<Object> deducedFacts) {
         return getPotentialMatches(deducedFacts)
-            .map(p -> p.groupId)
+            .map(p -> p.getGroupId())
             .sorted()
             .distinct()
-            .map(id -> new Match(id, null))
+            .map(id -> new Match(id))
             .collect(Collectors.toList());
     }
 
@@ -107,8 +107,8 @@ public class Matcher {
         // group ids in conflicting sets
         // "conflicting" means they target the same (system, product) couple
         Map<InstalledProduct, Set<Integer>> conflicts = getPotentialMatches(deducedFacts).collect(
-            Collectors.groupingBy(m -> new InstalledProduct(m.systemId, m.productId),
-            Collectors.mapping(p -> p.groupId, Collectors.toCollection(TreeSet::new)))
+            Collectors.groupingBy(m -> new InstalledProduct(m.getSystemId(), m.getProductId()),
+            Collectors.mapping(p -> p.getGroupId(), Collectors.toCollection(TreeSet::new)))
         );
 
         // discard the above map keys, we only care about values (conflict sets)
@@ -123,9 +123,9 @@ public class Matcher {
         // to all of the conflict sets in which it is in
         return getMatches(deducedFacts).stream()
             .collect(Collectors.toMap(
-                    m -> m.id,
+                    m -> m.getId(),
                     m -> conflictList.stream()
-                       .filter(s -> Collections.binarySearch(s, m.id) >= 0)
+                       .filter(s -> Collections.binarySearch(s, m.getId()) >= 0)
                        .collect(Collectors.toList())
             ));
     }

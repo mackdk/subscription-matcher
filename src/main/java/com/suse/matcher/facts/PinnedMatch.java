@@ -11,10 +11,10 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 public class PinnedMatch {
 
     /** The system id. */
-    public Long systemId;
+    private long systemId;
 
     /** The subscription id. */
-    public Long subscriptionId;
+    private long subscriptionId;
 
     /**
      * Standard constructor.
@@ -22,7 +22,7 @@ public class PinnedMatch {
      * @param systemIdIn a system id
      * @param subscriptionIdIn an id of subscription assigned to the system
      */
-    public PinnedMatch(Long systemIdIn, Long subscriptionIdIn) {
+    public PinnedMatch(long systemIdIn, long subscriptionIdIn) {
         systemId = systemIdIn;
         subscriptionId = subscriptionIdIn;
     }
@@ -38,7 +38,7 @@ public class PinnedMatch {
      *
      * @return the system id
      */
-    public Long getSystemId() {
+    public long getSystemId() {
         return systemId;
     }
 
@@ -47,7 +47,7 @@ public class PinnedMatch {
      *
      * @return the subscription id
      */
-    public Long getSubscriptionId() {
+    public long getSubscriptionId() {
         return subscriptionId;
     }
 

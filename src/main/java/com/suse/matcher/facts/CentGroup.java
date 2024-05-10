@@ -31,10 +31,10 @@ import org.kie.api.definition.type.PropertyReactive;
 public class CentGroup {
 
     /** The id **/
-    public int id;
+    private final int id;
 
     /** The number of cents consumed by this cent group **/
-    public int cents;
+    private final int cents;
 
     public CentGroup(int id, int cents) {
         this.id = id;

@@ -72,7 +72,7 @@ public class OptaPlanner {
         solver.solve(unsolved);
         LOGGER.info("Optimization phase took {}ms", System.currentTimeMillis() - start);
         result = solver.getBestSolution();
-        LOGGER.info("{} matches confirmed", result.getMatches().stream().filter(m -> m.confirmed).count());
+        LOGGER.info("{} matches confirmed", result.getMatches().stream().filter(m -> m.isConfirmed()).count());
 
         // show Penalty facts generated in Scores.drl using DroolsScoreDirector and re-calculating
         // the score of the best solution because facts generated dynamically are not available outside of this object

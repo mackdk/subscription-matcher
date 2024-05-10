@@ -18,7 +18,6 @@ package com.suse.matcher.solver;
 import com.suse.matcher.facts.PotentialMatch;
 import com.suse.matcher.util.CollectionUtils;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
@@ -61,7 +60,7 @@ public class MatchSwapMoveIterator implements Iterator<MatchMove> {
 
         idMap = orderedMatches.stream()
                 .collect(Collectors.toMap(
-                        match -> match.id,
+                        match -> match.getId(),
                         match -> match
                 ));
 
@@ -69,10 +68,10 @@ public class MatchSwapMoveIterator implements Iterator<MatchMove> {
         Map<Long, Map<Boolean, List<PotentialMatch>>> subscriptionMatches = assignmentIn.getSortedPotentialMatchesCache()
                 .stream()
                 .collect(Collectors.groupingBy(
-                    pm -> pm.subscriptionId,
+                    pm -> pm.getSubscriptionId(),
                     TreeMap::new,
                     Collectors.groupingBy(
-                        pm -> idMap.get(pm.groupId).confirmed,
+                        pm -> idMap.get(pm.getGroupId()).isConfirmed(),
                         TreeMap::new,
                         CollectionUtils.toShuffledList(randomIn)
                     )
@@ -103,30 +102,30 @@ public class MatchSwapMoveIterator implements Iterator<MatchMove> {
 
         // pick the matches to change
         Pair<PotentialMatch, PotentialMatch> next = iterator.next();
-        Match match1 = idMap.get(next.getLeft().groupId);
-        Match match2 = idMap.get(next.getRight().groupId);
+        Match match1 = idMap.get(next.getLeft().getGroupId());
+        Match match2 = idMap.get(next.getRight().getGroupId());
 
         // swap their "confirmed" flag
         matches.add(match1);
-        states.add(match2.confirmed);
+        states.add(match2.isConfirmed());
         matches.add(match2);
-        states.add(match1.confirmed);
+        states.add(match1.isConfirmed());
 
         // also make sure any conflicting match is (flipped to) false
-        if (BooleanUtils.isTrue(match2.confirmed)) {
-            assignment.getConflictingMatchIds(match1.id)
+        if (match2.isConfirmed()) {
+            assignment.getConflictingMatchIds(match1.getId())
                     .map(id -> idMap.get(id))
-                    .filter(conflict -> conflict.confirmed)
+                    .filter(conflict -> conflict.isConfirmed())
                     .forEach(conflict -> {
                         matches.add(conflict);
                         states.add(false);
                     });
         }
 
-        if (BooleanUtils.isTrue(match1.confirmed)) {
-            assignment.getConflictingMatchIds(match2.id)
+        if (match1.isConfirmed()) {
+            assignment.getConflictingMatchIds(match2.getId())
                     .map(id -> idMap.get(id))
-                    .filter(conflict -> conflict.confirmed)
+                    .filter(conflict -> conflict.isConfirmed())
                     .forEach(conflict -> {
                         matches.add(conflict);
                         states.add(false);

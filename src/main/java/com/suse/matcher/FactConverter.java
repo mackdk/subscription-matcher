@@ -22,6 +22,7 @@ import com.suse.matcher.json.JsonSystem;
 import com.suse.matcher.json.JsonVirtualizationGroup;
 import com.suse.matcher.solver.Assignment;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 
 import java.util.Collection;
@@ -80,8 +81,8 @@ public class FactConverter {
                     product.getId(),
                     product.getName(),
                     product.getProductClass(),
-                    product.getFree(),
-                    product.getBase()));
+                    BooleanUtils.isTrue(product.getFree()),
+                    BooleanUtils.isTrue(product.getBase())));
         }
 
         for (JsonSubscription subscription : input.getSubscriptions()) {
@@ -122,8 +123,8 @@ public class FactConverter {
         List<JsonMessage> messages = assignment.getProblemFactStream(Message.class)
                 .sorted()
                 .map(m -> new JsonMessage(
-                        m.type,
-                        m.data
+                        m.getType(),
+                        m.getData()
                 ))
                 .collect(Collectors.toList());
 
@@ -153,32 +154,32 @@ public class FactConverter {
      */
     public static List<JsonMatch> getMatches(Assignment assignment) {
         Set<Integer> confirmedGroupIds = assignment.getMatches().stream()
-                .filter(m -> m.confirmed)
-                .map(m -> m.id)
+                .filter(m -> m.isConfirmed())
+                .map(m -> m.getId())
                 .collect(Collectors.toSet());
 
         // map of cent group id -> cent group cents
         Map<Number, Integer> centGroupsCents = assignment.getProblemFactStream(CentGroup.class)
                 .collect(Collectors.toMap(
-                        cg -> cg.id,
-                        cg -> cg.cents
+                        cg -> cg.getId(),
+                        cg -> cg.getCents()
                 ));
 
         // how many confirmed Potential Matches share one Cent Group
         Map<Integer, Integer> centGroupMatchesCount = assignment.getProblemFactStream(PotentialMatch.class)
                 .filter(pm -> confirmedGroupIds.contains(pm.getGroupId()))
                 .collect(Collectors.toMap(
-                        pm -> pm.centGroupId,
+                        pm -> pm.getCentGroupId(),
                         pm -> 1,
                         (v1, v2) -> v1 + v2
                 ));
 
         return assignment.getProblemFactStream(PotentialMatch.class)
-            .filter(m -> confirmedGroupIds.contains(m.groupId)) // only confirmed matches
+            .filter(m -> confirmedGroupIds.contains(m.getGroupId())) // only confirmed matches
             .map(m -> new JsonMatch(
-                m.systemId,
-                m.subscriptionId,
-                m.productId,
+                m.getSystemId(),
+                m.getSubscriptionId(),
+                m.getProductId(),
                 centGroupsCents.get(m.getCentGroupId()) / centGroupMatchesCount.getOrDefault(m.getCentGroupId(), 1)
             ))
             .sorted((a, b) -> new CompareToBuilder()
@@ -200,13 +201,21 @@ public class FactConverter {
     private static List<JsonSubscription> getSubscriptions(Assignment assignment) {
         Map<Long, Set<Long>> subProducts = assignment.getProblemFactStream(SubscriptionProduct.class)
                 .collect(Collectors.groupingBy(
-                    sp -> sp.subscriptionId,
-                    Collectors.mapping(sp -> sp.productId, Collectors.toCollection(() -> new TreeSet<>()))
+                    sp -> sp.getSubscriptionId(),
+                    Collectors.mapping(sp -> sp.getProductId(), Collectors.toCollection(() -> new TreeSet<>()))
                 ));
         return assignment.getProblemFactStream(Subscription.class)
                 .sorted(Comparator.comparing(Subscription::getId))
-                .map(s -> new JsonSubscription(s.id, s.partNumber, s.name, s.quantity, s.startDate, s.endDate,
-                        s.sccUsername, subProducts.get(s.id)))
+                .map(s -> new JsonSubscription(
+                    s.getId(),
+                    s.getPartNumber(),
+                    s.getName(),
+                    s.getQuantity(),
+                    s.getStartDate(),
+                    s.getEndDate(),
+                    s.getSccUsername(),
+                    subProducts.get(s.getId())
+                ))
                 .collect(Collectors.toList());
     }
 }

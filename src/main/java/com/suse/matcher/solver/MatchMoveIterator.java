@@ -39,7 +39,7 @@ public class MatchMoveIterator implements Iterator<MatchMove> {
         iterator = orderedMatches.iterator();
 
         idMap = orderedMatches.stream()
-            .collect(Collectors.toMap(match -> match.id, match -> match));
+            .collect(Collectors.toMap(match -> match.getId(), match -> match));
     }
 
     /** {@inheritDoc} */
@@ -59,15 +59,15 @@ public class MatchMoveIterator implements Iterator<MatchMove> {
         Match match = iterator.next();
 
         // add it, flipped, to the move lists
-        boolean newState = !match.confirmed;
+        boolean newState = !match.isConfirmed();
         matches.add(match);
         states.add(newState);
 
         // also make sure any conflicting match is (flipped to) false
         if (newState) {
-            assignment.getConflictingMatchIds(match.id)
+            assignment.getConflictingMatchIds(match.getId())
                 .map(id -> idMap.get(id))
-                .filter(conflict -> conflict.confirmed)
+                .filter(conflict -> conflict.isConfirmed())
                 .forEach(conflict -> {
                     matches.add(conflict);
                     states.add(false);

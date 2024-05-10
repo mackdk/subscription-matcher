@@ -13,10 +13,10 @@ import org.kie.api.definition.type.PropertyReactive;
 public class InstalledProduct {
 
     /** The system id. */
-    public Long systemId;
+    private final long systemId;
 
     /** The product id. */
-    public Long productId;
+    private final long productId;
 
     /**
      * Instantiates a new installation relationship.
@@ -24,7 +24,7 @@ public class InstalledProduct {
      * @param systemIdIn the system id
      * @param productIdIn the product id
      */
-    public InstalledProduct(Long systemIdIn, Long productIdIn) {
+    public InstalledProduct(long systemIdIn, long productIdIn) {
         systemId = systemIdIn;
         productId = productIdIn;
     }
@@ -34,7 +34,7 @@ public class InstalledProduct {
      *
      * @return the system id
      */
-    public Long getSystemId() {
+    public long getSystemId() {
         return systemId;
     }
 
@@ -43,7 +43,7 @@ public class InstalledProduct {
      *
      * @return the product id
      */
-    public Long getProductId() {
+    public long getProductId() {
         return productId;
     }
 

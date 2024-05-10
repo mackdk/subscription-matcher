@@ -25,9 +25,9 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  **/
 public class ConfirmedMatchInPenaltyGroup {
 
-    public long subscriptionId;
-    public int penaltyGroupId;
-    public long guestId;
+    private final long subscriptionId;
+    private final int penaltyGroupId;
+    private final long guestId;
 
     /**
      * Standard constructor.

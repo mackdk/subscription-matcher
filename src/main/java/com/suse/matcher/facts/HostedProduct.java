@@ -14,10 +14,10 @@ import org.kie.api.definition.type.PropertyReactive;
 public class HostedProduct {
 
     /** The system id. */
-    public Long systemId;
+    private final long systemId;
 
     /** The product id. */
-    public Long productId;
+    private final long productId;
 
     /**
      * Instantiates a new "hosted" installation relationship.
@@ -25,7 +25,7 @@ public class HostedProduct {
      * @param systemIdIn the system id
      * @param productIdIn the product id
      */
-    public HostedProduct(Long systemIdIn, Long productIdIn) {
+    public HostedProduct(long systemIdIn, long productIdIn) {
         systemId = systemIdIn;
         productId = productIdIn;
     }
@@ -35,7 +35,7 @@ public class HostedProduct {
      *
      * @return the system id
      */
-    public Long getSystemId() {
+    public long getSystemId() {
         return systemId;
     }
 
@@ -44,7 +44,7 @@ public class HostedProduct {
      *
      * @return the product id
      */
-    public Long getProductId() {
+    public long getProductId() {
         return productId;
     }
 

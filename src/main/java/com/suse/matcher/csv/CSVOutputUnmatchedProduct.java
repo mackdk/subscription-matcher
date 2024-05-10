@@ -53,9 +53,9 @@ public class CSVOutputUnmatchedProduct {
         row.add(productName);
 
         for (System system : unmatchedSystems) {
-            row.add(system.name);
-            row.add(String.valueOf(system.id));
-            row.add(String.valueOf(system.cpus));
+            row.add(system.getName());
+            row.add(String.valueOf(system.getId()));
+            row.add(String.valueOf(system.getCpus()));
             resultSet.add(row);
             row = new ArrayList<>();
             row.add("");

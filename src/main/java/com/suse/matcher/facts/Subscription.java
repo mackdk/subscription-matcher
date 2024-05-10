@@ -56,6 +56,15 @@ public class Subscription implements Comparable<Subscription> {
             description = descriptionIn;
         }
 
+        /**
+         * Gets the description of this policy.
+         *
+         * @return the description
+         */
+        public String getDescription() {
+            return description;
+        }
+
         /** {@inheritDoc} */
         @Override
         public String toString() {
@@ -64,51 +73,53 @@ public class Subscription implements Comparable<Subscription> {
     }
 
     // constructor-populated fields
+
     /** The id. */
-    public Long id;
+    private final long id;
 
     /** The part number. */
-    public String partNumber;
-
-    /** The friendly name. */
-    public String name;
-
-    /** The number of subscription units (usually systems) available in this subscription. */
-    public Integer quantity;
-
-    /** Start Date. */
-    public Date startDate;
-
-    /** End Date. */
-    public Date endDate;
+    private final String partNumber;
 
     /** SCC Username. */
-    public String sccUsername;
+    private final String sccUsername;
+
+    /** The friendly name. */
+    private String name;
+
+    /** The number of subscription units (usually systems) available in this subscription. */
+    private Integer quantity;
+
+    /** Start Date. */
+    private Date startDate;
+
+    /** End Date. */
+    private Date endDate;
 
     // rule-computed fields
+
     /** Virtualization policy. */
-    public Policy policy;
+    private Policy policy;
 
     /** Support level identifier. */
-    public String supportLevel;
+    private String supportLevel;
 
     /**  Populated CPU sockets or IFLs (s390x architecture), null for "instance subscriptions". */
-    public Integer cpus = null;
+    private Integer cpus = null;
 
     /**   Can this subscription be used multiple times on the same system?. */
-    public Boolean stackable;
-
-    /** Should this subscription be matched at all? Eg. expired subscriptions can be ignored. */
-    public Boolean ignored = false;
+    private boolean stackable;
 
     /** The Hard Bundle Id that this subscription belongs to. If null, this doesn't belong to any Hard Bundle */
-    public Long hardBundleId;
+    private Long hardBundleId;
 
     /** Does this subscription on its own represent a hard bundle? */
-    public Boolean singleSubscriptionHardBundle = false;
+    private boolean singleSubscriptionHardBundle = false;
 
     /** Id of subscription to which this subscription has been aggregated **/
-    public Long aggregatedSubscriptionId;
+    private Long aggregatedSubscriptionId;
+
+    /** Should this subscription be matched at all? Eg. expired subscriptions can be ignored. */
+    private Boolean ignored = false;
 
     /**
      * Instantiates a new subscription.
@@ -121,7 +132,7 @@ public class Subscription implements Comparable<Subscription> {
      * @param endDateIn the expires at
      * @param sccUsernameIn the scc org id
      */
-    public Subscription(Long idIn, String partNumberIn, String nameIn, Integer quantityIn, Date startDateIn, Date endDateIn,
+    public Subscription(long idIn, String partNumberIn, String nameIn, Integer quantityIn, Date startDateIn, Date endDateIn,
             String sccUsernameIn) {
         id = idIn;
         partNumber = partNumberIn;
@@ -142,49 +153,12 @@ public class Subscription implements Comparable<Subscription> {
     }
 
     /**
-     * Returns true if this subscription has to be ignored for the matching
-     * (eg. because it is expired)
-     *
-     * @return true if the subscription is to be ignored
-     */
-    public Boolean getIgnored() {
-        return ignored;
-    }
-
-    /**
      * Gets the part number.
      *
      * @return the part number
      */
     public String getPartNumber() {
         return partNumber;
-    }
-
-    /**
-     * Gets the number of subscriptions available.
-     *
-     * @return the quantity
-     */
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    /**
-     * Gets the start date.
-     *
-     * @return the start date
-     */
-    public Date getStartsAt() {
-        return startDate;
-    }
-
-    /**
-     * Gets the end date.
-     *
-     * @return the end date
-     */
-    public Date getExpiresAt() {
-        return endDate;
     }
 
     /**
@@ -197,12 +171,93 @@ public class Subscription implements Comparable<Subscription> {
     }
 
     /**
+     * Gets the name.
+     *
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Sets the name.
+     *
+     * @param nameIn the name
+     */
+    public void setName(String nameIn) {
+        name = nameIn;
+    }
+
+    /**
+     * Gets the number of subscriptions available.
+     *
+     * @return the quantity
+     */
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    /**
+     * Sets the number of subscriptions available.
+     *
+     * @param quantityIn the quantity
+     */
+    public void setQuantity(Integer quantityIn) {
+        this.quantity = quantityIn;
+    }
+
+    /**
+     * Gets the start date.
+     *
+     * @return the start date
+     */
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    /**
+     * Sets the start date.
+     *
+     * @param startDateIn the start date
+     */
+    public void setStartDate(Date startDateIn) {
+        this.startDate = startDateIn;
+    }
+
+    /**
+     * Gets the end date.
+     *
+     * @return the end date
+     */
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    /**
+     * Sets the end date.
+     *
+     * @param endDateIn the end date
+     */
+    public void setEndDate(Date endDateIn) {
+        this.endDate = endDateIn;
+    }
+
+    /**
      * Gets the virtualization policy.
      *
      * @return the virtualization policy
      */
     public Policy getPolicy() {
         return policy;
+    }
+
+    /**
+     * Sets the virtualization policy.
+     *
+     * @param policyIn the virtualization policy
+     */
+    public void setPolicy(Policy policyIn) {
+        this.policy = policyIn;
     }
 
     /**
@@ -215,6 +270,15 @@ public class Subscription implements Comparable<Subscription> {
     }
 
     /**
+     * Sets the support level
+     *
+     * @param supportLevelIn the support level
+     */
+    public void setSupportLevel(String supportLevelIn) {
+        this.supportLevel = supportLevelIn;
+    }
+
+    /**
      * Gets the cpus.
      *
      * @return the cpus
@@ -224,12 +288,30 @@ public class Subscription implements Comparable<Subscription> {
     }
 
     /**
-     * Gets the stackable.
+     * Sets the cpus
      *
-     * @return the stackable
+     * @param cpusIn the cpus
      */
-    public Boolean getStackable() {
+    public void setCpus(Integer cpusIn) {
+        this.cpus = cpusIn;
+    }
+
+    /**
+     * Gets if the subscription is stackable.
+     *
+     * @return true if stackable
+     */
+    public boolean isStackable() {
         return stackable;
+    }
+
+    /**
+     * Sets if the subscription is stackable
+     *
+     * @param stackableIn true if stackable
+     */
+    public void setStackable(boolean stackableIn) {
+        this.stackable = stackableIn;
     }
 
     /**
@@ -240,13 +322,6 @@ public class Subscription implements Comparable<Subscription> {
     }
 
     /**
-     * @return true if this subscription on its own represents a hard bundle
-     */
-    public Boolean getSingleSubscriptionHardBundle() {
-        return singleSubscriptionHardBundle;
-    }
-
-    /**
      * @param hardBundleId The hardBundleId to set.
      */
     public void setHardBundleId(Long hardBundleId) {
@@ -254,21 +329,10 @@ public class Subscription implements Comparable<Subscription> {
     }
 
     /**
-     * Gets the aggregatedSubscriptionId.
-     *
-     * @return aggregatedSubscriptionId
+     * @return true if this subscription on its own represents a hard bundle
      */
-    public Long getAggregatedSubscriptionId() {
-        return aggregatedSubscriptionId;
-    }
-
-    /**
-     * Sets the name.
-     *
-     * @param nameIn - the name
-     */
-    public void setName(String nameIn) {
-        name = nameIn;
+    public boolean isSingleSubscriptionHardBundle() {
+        return singleSubscriptionHardBundle;
     }
 
     /**
@@ -276,8 +340,46 @@ public class Subscription implements Comparable<Subscription> {
      *
      * @param singleSubscriptionHardBundleIn - the singleSubscriptionHardBundle
      */
-    public void setSingleSubscriptionHardBundle(Boolean singleSubscriptionHardBundleIn) {
+    public void setSingleSubscriptionHardBundle(boolean singleSubscriptionHardBundleIn) {
         singleSubscriptionHardBundle = singleSubscriptionHardBundleIn;
+    }
+
+    /**
+     * Gets the id of the aggregate subscription.
+     *
+     * @return the id of the aggregate subscription
+     */
+    public Long getAggregatedSubscriptionId() {
+        return aggregatedSubscriptionId;
+    }
+
+    /**
+     * Sets the id of the aggregated subscription
+     *
+     * @param aggregatedSubscriptionIdIn the id of the aggregate subscription
+     */
+    public void setAggregatedSubscriptionId(Long aggregatedSubscriptionIdIn) {
+        this.aggregatedSubscriptionId = aggregatedSubscriptionIdIn;
+    }
+
+    /**
+     * Returns true if this subscription has to be ignored for the matching
+     * (eg. because it is expired)
+     *
+     * @return true if the subscription is to be ignored
+     */
+    public boolean isIgnored() {
+        return ignored;
+    }
+
+    /**
+     * Sets if this subscription has to be ignored for the matching
+     * (eg. because it is expired)
+     *
+     * @param ignoredIn true if the subscription is to be ignored
+     */
+    public void setIgnored(Boolean ignoredIn) {
+        this.ignored = ignoredIn;
     }
 
     /** {@inheritDoc} */

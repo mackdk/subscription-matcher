@@ -6,9 +6,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import com.suse.matcher.json.JsonInput;
-import com.suse.matcher.json.JsonOutput;
-import com.suse.matcher.solver.Assignment;
+import com.suse.matcher.deduction.Drools;
+import com.suse.matcher.deduction.FactConverter;
+import com.suse.matcher.io.JsonIO;
+import com.suse.matcher.io.Log4J;
+import com.suse.matcher.io.OutputWriter;
+import com.suse.matcher.io.json.JsonInput;
+import com.suse.matcher.io.json.JsonOutput;
+import com.suse.matcher.optimization.Assignment;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

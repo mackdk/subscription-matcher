@@ -1,0 +1,111 @@
+package com.suse.matcher.optimization.rules;
+
+import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScoreHolder;
+
+import com.suse.matcher.deduction.facts.CentGroup;
+import com.suse.matcher.deduction.facts.InstalledProduct;
+import com.suse.matcher.deduction.facts.PenaltyGroup;
+import com.suse.matcher.deduction.facts.PinnedMatch;
+import com.suse.matcher.deduction.facts.PotentialMatch;
+import com.suse.matcher.deduction.facts.Subscription;
+import com.suse.matcher.deduction.facts.System;
+import com.suse.matcher.optimization.facts.ConfirmedMatchInPenaltyGroup;
+import com.suse.matcher.optimization.facts.OneTwoPenalty;
+import com.suse.matcher.optimization.facts.Penalty;
+import com.suse.matcher.optimization.Match;
+
+global HardSoftScoreHolder scoreHolder;
+
+// Hard constraints: no solution can ever be produced if any of those is broken
+// (that is, score is less than 0). If that happens, we found a bug!
+
+// Note that the construction heuristic must be able to construct a solution
+// with score 0, so that the final solution can never be unacceptable
+
+rule "calculate12Penalties"
+  when
+    Subscription($subscriptionId : id, policy != null && policy == Policy.ONE_TWO, ignored == false) and
+    PenaltyGroup($penaltyGroupId: id, $guestId : guestId) and
+    PotentialMatch($groupId : groupId, systemId == $guestId, subscriptionId == $subscriptionId) and
+    Match(id == $groupId, confirmed == true);
+  then
+    // insert a confirmed match for subscription, guest and penalty group
+    insertLogical(new ConfirmedMatchInPenaltyGroup($subscriptionId, $penaltyGroupId, $guestId));
+end
+
+rule "insert12Penalties"
+  when
+    Subscription($subscriptionId : id, policy != null && policy == Policy.ONE_TWO, ignored == false) and
+    PenaltyGroup($penaltyGroupId: id);
+    accumulate(
+      ConfirmedMatchInPenaltyGroup(subscriptionId == $subscriptionId, penaltyGroupId == $penaltyGroupId);
+      $count : count();
+      ($count % 2) == 1
+    );
+  then
+    // insert a 1-2 penalty when the number of confirmed matches in penalty group is odd
+    insertLogical(new OneTwoPenalty($subscriptionId, $penaltyGroupId, 50));
+end
+
+rule "penaltyForExceededMatches"
+  when
+    Subscription($subscriptionId : id, ignored == false) and
+    PotentialMatch(subscriptionId == $subscriptionId, $groupId : groupId, $centGroupId : centGroupId) and
+    Match(confirmed == true, id == $groupId) and
+    CentGroup(id == $centGroupId, $cents : cents);
+  then
+    insertLogical(new Penalty($subscriptionId, -$centGroupId, $cents));
+end
+
+rule "dontExceedSubscriptionCount"
+    when
+        Subscription($subscriptionId: id, $quantity : quantity, ignored == false)
+
+        accumulate (
+            Penalty(subscriptionId == $subscriptionId, $cents: cents);
+            $penaltyCents : sum($cents)
+        )
+    then
+        int availableCents = $quantity * 100;
+        int totalUsedCents = $penaltyCents.intValue();
+        scoreHolder.addHardConstraintMatch(kcontext,
+            (availableCents - totalUsedCents) >= 0 ? 0 :
+            // limit penalty to 10 points
+            -10 + availableCents * 9 / totalUsedCents
+        );
+end
+
+
+// Soft constraints: we try to find the solution that maximizes the score, but there are no guarantees.
+
+// Note that soft score values reflect relative importance: maximizeCoveredInstallations (100) is more
+// important than maximizePinnedMatches (10) and so on
+
+rule "maximizeCoveredInstallations"
+    when
+        InstalledProduct($systemId : systemId, $productId : productId)
+        PotentialMatch($groupId : groupId, systemId == $systemId, productId == $productId)
+        Match(id == $groupId, confirmed == true)
+    then
+        scoreHolder.addSoftConstraintMatch(kcontext, 100);
+end
+
+rule "maximizePinnedMatches"
+    when
+        PinnedMatch($systemId : systemId, $subscriptionId : subscriptionId)
+        PotentialMatch($groupId : groupId, systemId == $systemId, subscriptionId == $subscriptionId)
+        Match(id == $groupId, confirmed == true)
+    then
+        scoreHolder.addSoftConstraintMatch(kcontext, 10);
+end
+
+rule "preferBundledMatches"
+    when
+        PotentialMatch($groupId : groupId, $systemId : systemId, $centGroupId : centGroupId)
+        PotentialMatch($groupId2 : groupId, systemId == $systemId, centGroupId == $centGroupId)
+        Match(id == $groupId, confirmed == true)
+        Match(id == $groupId2, id != $groupId)
+    then
+        scoreHolder.addSoftConstraintMatch(kcontext, 1);
+end
+

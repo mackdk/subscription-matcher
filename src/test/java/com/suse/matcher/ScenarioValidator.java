@@ -4,11 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.suse.matcher.json.JsonInput;
-import com.suse.matcher.json.JsonOutput;
-import com.suse.matcher.json.JsonSubscription;
-import com.suse.matcher.json.JsonSystem;
-import com.suse.matcher.json.JsonVirtualizationGroup;
+import com.suse.matcher.io.json.JsonInput;
+import com.suse.matcher.io.json.JsonOutput;
+import com.suse.matcher.io.json.JsonSubscription;
+import com.suse.matcher.io.json.JsonSystem;
+import com.suse.matcher.io.json.JsonVirtualizationGroup;
 
 import org.opentest4j.MultipleFailuresError;
 

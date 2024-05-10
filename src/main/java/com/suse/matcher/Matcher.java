@@ -1,10 +1,14 @@
 package com.suse.matcher;
 
-import com.suse.matcher.facts.InstalledProduct;
-import com.suse.matcher.facts.PotentialMatch;
-import com.suse.matcher.json.JsonInput;
-import com.suse.matcher.solver.Assignment;
-import com.suse.matcher.solver.Match;
+import com.suse.matcher.deduction.Drools;
+import com.suse.matcher.deduction.FactConverter;
+import com.suse.matcher.deduction.facts.InstalledProduct;
+import com.suse.matcher.deduction.facts.PotentialMatch;
+import com.suse.matcher.io.json.JsonInput;
+import com.suse.matcher.optimization.Assignment;
+import com.suse.matcher.optimization.Match;
+import com.suse.matcher.optimization.MessageCollector;
+import com.suse.matcher.optimization.OptaPlanner;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

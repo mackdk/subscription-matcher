@@ -1,0 +1,38 @@
+package com.suse.matcher.deduction.rules;
+
+import com.suse.matcher.deduction.Drools;
+import com.suse.matcher.deduction.facts.HostedProduct;
+import com.suse.matcher.deduction.facts.HostGuest;
+import com.suse.matcher.deduction.facts.InstalledProduct;
+import com.suse.matcher.deduction.facts.PenaltyGroup;
+import com.suse.matcher.deduction.facts.System;
+import com.suse.matcher.deduction.facts.VirtualizationGroupMember;
+
+rule "generateHostedProduct"
+    agenda-group "InputAugmenting"
+    when
+        System($systemId : id, physical == false)
+        InstalledProduct(systemId == $systemId, $productId : productId)
+        HostGuest($hostId : hostId, guestId == $systemId)
+    then
+        insert(new HostedProduct($hostId, $productId));
+end
+
+rule "generatePenaltyGroupsFromVirtualizationGroups"
+    agenda-group "InputAugmenting"
+    when
+        VirtualizationGroupMember($virtualizationGroupId : virtualizationGroupId, $guestId : guestId)
+    then
+        insert(new PenaltyGroup($virtualizationGroupId, $guestId));
+end
+
+rule "generatePenaltyGroups"
+    agenda-group "InputAugmenting"
+    when
+        HostGuest($hostId : hostId, $guestId : guestId)
+        not VirtualizationGroupMember(guestId == $guestId)
+    then
+        int penaltyGroupId = Drools.generateId("host_guest", $hostId);
+        insert(new PenaltyGroup(penaltyGroupId, $guestId));
+end
+

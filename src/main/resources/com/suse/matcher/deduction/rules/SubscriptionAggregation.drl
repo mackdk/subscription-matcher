@@ -1,0 +1,106 @@
+package com.suse.matcher.deduction.rules;
+
+import com.suse.matcher.deduction.facts.Subscription;
+import com.suse.matcher.deduction.facts.SubscriptionProduct;
+
+/**
+ * This Agenda Group aggregates equal (same properties, same product set) OEM subscriptions into a single one
+ *
+ * This consists of these actions (in this order (enforced by 'salience')):
+ * - merging equal Subscriptions together
+ * - merging PinnedMatches and generating Messages
+ * - cleaning up stale PinnedMatches, SubscriptionProducts and Subscriptions
+ */
+
+// this rule has increased salience, so that it fires before the "cleanup" rules below
+rule "aggregateEqualStackableSubscriptions"
+    salience 2
+    agenda-group "SubscriptionAggregation"
+    when
+        $s1: Subscription(ignored == false, stackable == true, id < 0, aggregatedSubscriptionId == null || aggregatedSubscriptionId == id)
+
+        $s2: Subscription(
+            ignored == false,
+            stackable == true,
+            id < 0, // OEM subscription
+            id > $s1.getId(),
+            // we don't want to merge subs that were merged into other subs already:
+            aggregatedSubscriptionId == null || aggregatedSubscriptionId == id,
+            partNumber == $s1.getPartNumber(),
+            name == $s1.getName(),
+            policy == $s1.getPolicy(),
+            cpus == $s1.getCpus(),
+            sccUsername == $s1.getSccUsername(),
+            quantity == 1)
+
+        accumulate(
+            $product1: SubscriptionProduct(subscriptionId == $s1.getId());
+            $productIds1: collectSet($product1.getProductId())
+        )
+
+        accumulate(
+            $product2: SubscriptionProduct(subscriptionId == $s2.getId());
+            $productIds2: collectSet($product2.getProductId());
+            $productIds2 == $productIds1
+        )
+    then
+        modify($s1) {
+            setQuantity($s1.getQuantity() + $s2.getQuantity()),
+            setAggregatedSubscriptionId($s1.getId()),
+            setStartDate($s1.getStartDate().after($s2.getStartDate()) ? $s1.getStartDate() : $s2.getStartDate()),
+            setEndDate($s1.getEndDate().before($s2.getEndDate()) ? $s1.getEndDate() : $s2.getEndDate())
+        }
+        modify($s2) {
+            setAggregatedSubscriptionId($s1.getId())
+        }
+
+        TreeMap<String, String> msgData = new TreeMap<>();
+        msgData.put("part_number", String.valueOf($s1.getPartNumber()));
+        insert(new Message(Message.Level.INFO, "merge_subscriptions", msgData));
+end
+
+// this rule has increased salience, so that it fires before the "cleanup" rules below
+rule "adjustPinnedMatches"
+    salience 1
+    agenda-group "SubscriptionAggregation"
+    when
+        $s: Subscription(aggregatedSubscriptionId != null, id != aggregatedSubscriptionId)
+        $pm: PinnedMatch(subscriptionId == $s.getId())
+    then
+        insert(new PinnedMatch($pm.getSystemId(), $s.getAggregatedSubscriptionId()));
+        retract($pm);
+
+        TreeMap<String, String> data = new TreeMap<>();
+        data.put("old_subscription_id", String.valueOf($s.getId()));
+        data.put("new_subscription_id", String.valueOf($s.getAggregatedSubscriptionId()));
+        data.put("system_id", String.valueOf($pm.getSystemId()));
+        insert(new Message(Message.Level.INFO, "adjust_pinned_match", data));
+end
+
+rule "removeAggregatedSubscriptions"
+    agenda-group "SubscriptionAggregation"
+    when
+        $s: Subscription(aggregatedSubscriptionId != null, id != aggregatedSubscriptionId)
+    then
+        retract($s)
+end
+
+rule "removeRedundantSubscriptionProducts"
+    agenda-group "SubscriptionAggregation"
+    when
+        $sp: SubscriptionProduct()
+        not Subscription(id == $sp.getSubscriptionId())
+    then
+        retract($sp)
+end
+
+rule "adjustAggregatedSubscriptionName"
+    agenda-group "SubscriptionAggregation"
+    no-loop
+    when
+        $s: Subscription(aggregatedSubscriptionId == id, !name.startsWith("Aggregated:"))
+    then
+        modify($s) {
+            setName("Aggregated: " + $s.getName())
+        }
+end

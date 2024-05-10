@@ -17,7 +17,7 @@ rule "ignoreExpiredSubscription"
         $subscription: Subscription((endDate != null && endDate < $timestamp) || (startDate != null && startDate > $timestamp))
     then
         modify($subscription) {
-            ignored = true;
+            setIgnored(true);
         }
 end
 
@@ -28,7 +28,7 @@ rule "ignoreNotActiveSubscriptions"
         $subscription : Subscription(endDate == null)
     then
         modify($subscription) {
-            ignored = true;
+            setIgnored(true);
         }
 end
 
@@ -43,13 +43,13 @@ rule "ignoreServiceSubscriptionsWithoutProducts"
         )
     then
         // Create a message if it's not a known service subscription
-        if (!$subscription.partNumber.startsWith("051-")) {
+        if (!$subscription.getPartNumber().startsWith("051-")) {
             TreeMap<String, String> msgData = new TreeMap<>();
-            msgData.put("part_number", String.valueOf($subscription.partNumber));
+            msgData.put("part_number", String.valueOf($subscription.getPartNumber()));
             insert(new Message(Message.Level.INFO, "no_products_associated", msgData));
         }
         modify($subscription) {
-            ignored = true;
+            setIgnored(true);
         }
 end
 
@@ -59,7 +59,7 @@ rule "ignoreSubscriptionWithoutQuantity"
         $subscription: Subscription(quantity == null)
     then
         modify($subscription) {
-            ignored = true;
+            setIgnored(true);
         }
 end
 
@@ -95,7 +95,7 @@ rule "logUnknownPartNumber"
         $subscription: Subscription(policy == null, partNumber != null, ignored == false)
     then
         TreeMap<String, String> data = new TreeMap<>();
-        data.put("part_number", $subscription.partNumber);
+        data.put("part_number", $subscription.getPartNumber());
         insert(new Message(Message.Level.DEBUG, "unknown_part_number", data));
 end
 
@@ -111,7 +111,7 @@ rule "logPhysicalGuest"
         data.put("id", String.valueOf($guestId));
         insert(new Message(Message.Level.DEBUG, "physical_guest", data));
         modify($guest) {
-            physical = false;
+            setPhysical(false);
         }
 end
 
@@ -130,7 +130,7 @@ rule "logMissingHost"
         data.put("id", String.valueOf($guestId));
         insert(new Message(Message.Level.WARNING, "guest_with_unknown_host", data));
         modify($guest) {
-            physical = true;
+            setPhysical(true);
         }
 end
 
@@ -143,6 +143,6 @@ rule "logMissingCpuCount"
         data.put("id", String.valueOf($id));
         insert(new Message(Message.Level.WARNING, "unknown_cpu_count", data));
         modify($system) {
-            cpus = 16;
+            setCpus(16);
         }
 end

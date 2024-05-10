@@ -6,6 +6,7 @@ import com.suse.matcher.facts.Product;
 import com.suse.matcher.facts.Subscription;
 import com.suse.matcher.facts.System;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -27,29 +28,30 @@ import org.optaplanner.core.api.domain.variable.PlanningVariable;
 public class Match implements Comparable<Match> {
 
     /** A unique identifier for this Match. */
-    public int id;
+    private int id;
 
     /**
      * True if this match is taken by the planner, false if it is possible but
      * not taken, null if the planner did not evaluate this match yet.
      */
-    public Boolean confirmed;
+    @PlanningVariable(valueRangeProviderRefs = {"booleanRange"})
+    private Boolean confirmed;
 
     /**
      * Standard constructor.
      *
      * @param idIn the id
-     * @param confirmedIn confirmation status
      */
-    public Match(int idIn, Boolean confirmedIn) {
+    public Match(int idIn) {
         id = idIn;
-        confirmed = confirmedIn;
+        confirmed = null;
     }
 
     /**
      * Default constructor.
      */
-    public Match() {
+    Match() {
+        // Empty constructor used by OptaPlanner
     }
 
     /**
@@ -62,13 +64,12 @@ public class Match implements Comparable<Match> {
     }
 
     /**
-     * Checks if is confirmed.
+     * Checks if this match has been confirmed.
      *
-     * @return the boolean
+     * @return true if the match is confirmed
      */
-    @PlanningVariable(valueRangeProviderRefs = {"booleanRange"})
-    public Boolean getConfirmed() {
-        return confirmed;
+    public boolean isConfirmed() {
+        return BooleanUtils.isTrue(confirmed);
     }
 
     /**
@@ -76,7 +77,7 @@ public class Match implements Comparable<Match> {
      *
      * @param confirmedIn the new confirmed value
      */
-    public void setConfirmed(Boolean confirmedIn) {
+    public void setConfirmed(boolean confirmedIn) {
         confirmed = confirmedIn;
     }
 

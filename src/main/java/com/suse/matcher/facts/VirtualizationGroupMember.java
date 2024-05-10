@@ -14,10 +14,10 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 public class VirtualizationGroupMember {
 
     /** The virtualization group id. */
-    public int virtualizationGroupId;
+    private final int virtualizationGroupId;
 
     /** The guest system id. */
-    public Long guestId;
+    private final long guestId;
 
     /**
      * Instantiates a new virtualization group member.
@@ -25,7 +25,7 @@ public class VirtualizationGroupMember {
      * @param virtualizationGroupIdIn the virtualization group id in
      * @param guestIdIn the guest id in
      */
-    public VirtualizationGroupMember(int virtualizationGroupIdIn, Long guestIdIn) {
+    public VirtualizationGroupMember(int virtualizationGroupIdIn, long guestIdIn) {
         virtualizationGroupId = virtualizationGroupIdIn;
         guestId = guestIdIn;
     }
@@ -44,7 +44,7 @@ public class VirtualizationGroupMember {
      *
      * @return the guest system id
      */
-    public Long getGuestId() {
+    public long getGuestId() {
         return guestId;
     }
 

@@ -17,10 +17,10 @@ import java.util.stream.Collectors;
 public class MatchMove extends AbstractMove<Assignment> {
 
     /** The matches. */
-    List<Match> matches;
+    private final List<Match> matches;
 
     /** The confirmed flags. */
-    List<Boolean> confirmedFlags;
+    private final List<Boolean> confirmedFlags;
 
     /**
      * Instantiates a new match move.
@@ -61,7 +61,7 @@ public class MatchMove extends AbstractMove<Assignment> {
     @Override
     public AbstractMove<Assignment> createUndoMove(ScoreDirector<Assignment> director) {
         List<Boolean> newConfirmedFlags = matches.stream()
-                .map(m -> m.confirmed)
+                .map(m -> m.isConfirmed())
                 .collect(Collectors.toList());
 
         return new MatchMove(matches, newConfirmedFlags);

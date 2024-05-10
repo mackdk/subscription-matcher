@@ -44,7 +44,7 @@ public class OutputWriter {
 
     private static final Logger LOGGER = LogManager.getLogger(OutputWriter.class);
 
-    private static final Comparator<System> SYSTEMS_BY_NAME = Comparator.comparing(s -> Objects.requireNonNullElse(s.name, ""));
+    private static final Comparator<System> SYSTEMS_BY_NAME = Comparator.comparing(s -> Objects.requireNonNullElse(s.getName(), ""));
 
     // filenames
     private static final String JSON_INPUT_FILE = "input.json";
@@ -142,8 +142,8 @@ public class OutputWriter {
             .orElse(new Date());
 
         Comparator<Subscription> activeSubsFirst = (s1, s2) -> {
-            int s1Active = timestamp.after(s1.startDate) && timestamp.before(s1.endDate) ? 0 : 1;
-            int s2Active = timestamp.after(s2.startDate) && timestamp.before(s2.endDate) ? 0 : 1;
+            int s1Active = timestamp.after(s1.getStartDate()) && timestamp.before(s1.getEndDate()) ? 0 : 1;
+            int s2Active = timestamp.after(s2.getStartDate()) && timestamp.before(s2.getEndDate()) ? 0 : 1;
             return s1Active - s2Active;
         };
 
@@ -162,18 +162,18 @@ public class OutputWriter {
             ));
 
         List<CSVOutputSubscription> subscriptions = assignment.getProblemFactStream(Subscription.class)
-            .filter(s -> s.policy != null)
-            .filter(s -> s.startDate != null && s.endDate != null)
-            .filter(s -> s.quantity != null && s.quantity > 0)
-            .sorted(activeSubsFirst.thenComparing(s -> s.partNumber))
+            .filter(s -> s.getPolicy() != null)
+            .filter(s -> s.getStartDate() != null && s.getEndDate() != null)
+            .filter(s -> s.getQuantity() != null && s.getQuantity() > 0)
+            .sorted(activeSubsFirst.thenComparing(s -> s.getPartNumber()))
             .map(s -> new CSVOutputSubscription(
-                s.partNumber,
-                s.name,
-                s.policy.toString(),
-                s.quantity,
-                s.startDate,
-                s.endDate,
-                matchedCounts.getOrDefault(s.id, 0)
+                s.getPartNumber(),
+                s.getName(),
+                s.getPolicy().toString(),
+                s.getQuantity(),
+                s.getStartDate(),
+                s.getEndDate(),
+                matchedCounts.getOrDefault(s.getId(), 0)
             ))
             .toList();
 
@@ -219,7 +219,7 @@ public class OutputWriter {
              CSVPrinter printer = new CSVPrinter(writer, csvFormat)) {
             // create map of product id -> set of systems ids with this product and filter out successful matches
             Map<Long, Set<Long>> unmatchedProductSystems = assignment.getProblemFactStream(InstalledProduct.class)
-                    .filter(sp -> matchMap.get(Pair.of(sp.systemId, sp.productId)) == null)
+                    .filter(sp -> matchMap.get(Pair.of(sp.getSystemId(), sp.getProductId())) == null)
                     .collect(Collectors.groupingBy(
                         InstalledProduct::getProductId,
                         Collectors.mapping(InstalledProduct::getSystemId, Collectors.toSet())
@@ -257,12 +257,12 @@ public class OutputWriter {
                 CSVPrinter printer = new CSVPrinter(writer, csvFormat)) {
 
             List<Message> messages = assignment.getProblemFactStream(Message.class)
-                .filter(m -> m.severity != Message.Level.DEBUG)
+                .filter(m -> m.getSeverity() != Message.Level.DEBUG)
                 .sorted()
                 .toList();
 
             for (Message message: messages) {
-                CSVOutputMessage csvMessage = new CSVOutputMessage(message.type, message.data);
+                CSVOutputMessage csvMessage = new CSVOutputMessage(message.getType(), message.getData());
                 printer.printRecords(csvMessage.getCSVRows());
             }
         }
@@ -277,7 +277,7 @@ public class OutputWriter {
 
     private static String getProductNameById(Long productId, Map<Long, Product> productsMap) {
         return Optional.ofNullable(productsMap.get(productId))
-                .map(p -> p.name)
+                .map(Product::getName)
                 .orElse("Unknown product (" + productId + ")");
     }
 

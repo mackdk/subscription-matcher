@@ -15,6 +15,9 @@
 
 package com.suse.matcher.facts;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.kie.api.definition.type.PropertyReactive;
 
 /**
@@ -24,7 +27,7 @@ import org.kie.api.definition.type.PropertyReactive;
 @PropertyReactive
 public class GroupInInheritedVirtualization {
 
-    private int groupId;
+    private final int groupId;
 
     /**
      * Standard constructor.
@@ -44,12 +47,34 @@ public class GroupInInheritedVirtualization {
         return groupId;
     }
 
-    /**
-     * Sets the groupId.
-     *
-     * @param groupIdIn - the groupId
-     */
-    public void setGroupId(int groupIdIn) {
-        groupId = groupIdIn;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof GroupInInheritedVirtualization)) {
+            return false;
+        }
+
+        GroupInInheritedVirtualization that = (GroupInInheritedVirtualization) o;
+
+        return new EqualsBuilder()
+            .append(groupId, that.groupId)
+            .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+            .append(groupId)
+            .toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+            .append("groupId", groupId)
+            .toString();
     }
 }

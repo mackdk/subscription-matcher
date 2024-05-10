@@ -17,17 +17,17 @@ rule "markHardBundledCandidates"
         // if there is such a subscription, the original subscription is a hard bundle candidate
         $candidate : Subscription(ignored == false, hardBundleId == null, singleSubscriptionHardBundle == false)
         Subscription( // try to find subscription in the same hard bundle
-            id != $candidate.id,
+            id != $candidate.getId(),
             ignored == false,
-            partNumber == $candidate.partNumber,
-            startDate == $candidate.startDate,
-            endDate == $candidate.endDate,
-            quantity == $candidate.quantity,
+            partNumber == $candidate.getPartNumber(),
+            startDate == $candidate.getStartDate(),
+            endDate == $candidate.getEndDate(),
+            quantity == $candidate.getQuantity(),
             singleSubscriptionHardBundle == false)
     then
         // each hard bundle candidate will start with hard bundle id equal to its own id, later we'll merge them together
         modify ($candidate) {
-            hardBundleId = $candidate.id;
+            setHardBundleId($candidate.getId());
         }
 end
 
@@ -41,16 +41,16 @@ rule "mergeHardBundles"
         // find 2 subscriptions with same attributes
         $leadingSub : Subscription(hardBundleId == id, ignored == false)
         $mergingSub : Subscription(ignored == false,
-            hardBundleId > $leadingSub.hardBundleId,
-            partNumber == $leadingSub.partNumber,
-            startDate == $leadingSub.startDate,
-            endDate == $leadingSub.endDate,
-            quantity == $leadingSub.quantity)
+            hardBundleId > $leadingSub.getHardBundleId(),
+            partNumber == $leadingSub.getPartNumber(),
+            startDate == $leadingSub.getStartDate(),
+            endDate == $leadingSub.getEndDate(),
+            quantity == $leadingSub.getQuantity())
 
         // when the products of subscriptions are disjoint
         not (
-            SubscriptionProduct(subscriptionId == $leadingSub.id, $productId : productId)  and
-            SubscriptionProduct(subscriptionId == $mergingSub.id, productId == $productId)
+            SubscriptionProduct(subscriptionId == $leadingSub.getId(), $productId : productId)  and
+            SubscriptionProduct(subscriptionId == $mergingSub.getId(), productId == $productId)
         )
 
         // .. and the products of the subscription to be merged are not empty
@@ -63,14 +63,14 @@ rule "mergeHardBundles"
     then
         // ... we "merge" mergingSub hard bundle to leading subscription
         modify($mergingSub) {
-            hardBundleId = $leadingSub.hardBundleId;
+            setHardBundleId($leadingSub.getHardBundleId());
         }
         modify ($leadingSub) {
             setSingleSubscriptionHardBundle(true)
         }
 
         for (Object mergingSP : $mergingSPs) {
-            insert(new SubscriptionProduct($leadingSub.id, ((SubscriptionProduct) mergingSP).getProductId()));
+            insert(new SubscriptionProduct($leadingSub.getId(), ((SubscriptionProduct) mergingSP).getProductId()));
             retract(mergingSP);
         }
 end
@@ -86,11 +86,11 @@ rule "mergePinnedMatches"
         TreeMap<String, String> data = new TreeMap<>();
         data.put("old_subscription_id", String.valueOf($subToRetractId));
         data.put("new_subscription_id", String.valueOf($hardBundleId));
-        data.put("system_id", String.valueOf($pinnedMatch.systemId));
+        data.put("system_id", String.valueOf($pinnedMatch.getSystemId()));
         insert(new Message(Message.Level.INFO, "adjust_pinned_match", data));
 
         // we cannot use modify() because of attributes in hashCode, retract and insert instead
-        insert(new PinnedMatch($pinnedMatch.systemId, $hardBundleId));
+        insert(new PinnedMatch($pinnedMatch.getSystemId(), $hardBundleId));
         retract($pinnedMatch);
 end
 
@@ -99,16 +99,16 @@ rule "removeRedundantSubscriptions"
     when
         // out all of the subscriptions in a hard bundle, we keep the one with lowest id
         $leadingSub: Subscription(ignored == false, hardBundleId == id, singleSubscriptionHardBundle == true)
-        $subToRetract : Subscription(ignored == false, id > $leadingSub.id, hardBundleId == $leadingSub.hardBundleId)
+        $subToRetract : Subscription(ignored == false, id > $leadingSub.getId(), hardBundleId == $leadingSub.getHardBundleId())
     then
         TreeMap<String, String> data = new TreeMap<>();
-        data.put("old_subscription_id", String.valueOf($subToRetract.id));
-        data.put("new_subscription_id", String.valueOf($leadingSub.id));
+        data.put("old_subscription_id", String.valueOf($subToRetract.getId()));
+        data.put("new_subscription_id", String.valueOf($leadingSub.getId()));
         insert(new Message(Message.Level.INFO, "hb_merge_subscriptions", data));
 
-        if ($leadingSub.name != null && $subToRetract.name != null) {
+        if ($leadingSub.getName() != null && $subToRetract.getName() != null) {
             modify($leadingSub) {
-                name = $leadingSub.name + " + " + $subToRetract.name
+                setName($leadingSub.getName() + " + " + $subToRetract.getName())
             }
         }
         retract($subToRetract);

@@ -98,10 +98,9 @@ public class Drools {
         result.stream()
             .filter(o -> o instanceof Message)
             .map(m -> (Message) m)
-            .filter(m -> m.severity.equals(Message.Level.DEBUG))
+            .filter(m -> m.getSeverity() == Message.Level.DEBUG)
             .sorted()
-            .forEach(m -> LOGGER.debug("{}: {}", m.type, m.data))
-        ;
+            .forEach(m -> LOGGER.debug("{}: {}", m.getType(), m.getData()));
 
         // cleanup
         kieLogger.close();

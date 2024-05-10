@@ -13,16 +13,16 @@ import org.kie.api.definition.type.PropertyReactive;
 @PropertyReactive
 public class System {
     /** The id. */
-    public Long id;
+    private final long id;
 
     /** The friendly name. */
-    public String name;
+    private final String name;
 
     /** The populated CPU socket count. */
-    public Integer cpus;
+    private Integer cpus;
 
     /** <code>true</code> if this is a machine made of metal. */
-    public Boolean physical;
+    private boolean physical;
 
     /**
      * Instantiates a new system.
@@ -32,7 +32,7 @@ public class System {
      * @param cpusIn the cpus
      * @param physicalIn true if this system is made of metal
      */
-    public System(Long idIn, String nameIn, Integer cpusIn, Boolean physicalIn) {
+    public System(long idIn, String nameIn, Integer cpusIn, boolean physicalIn) {
         id = idIn;
         name = nameIn;
         cpus = cpusIn;
@@ -44,8 +44,17 @@ public class System {
      *
      * @return the id
      */
-    public Long getId() {
+    public long getId() {
         return id;
+    }
+
+    /**
+     * Gets the name.
+     *
+     * @return the name
+     */
+    public String getName() {
+        return name;
     }
 
     /**
@@ -58,12 +67,30 @@ public class System {
     }
 
     /**
+     * Sets the cpus.
+     *
+     * @param cpusIn  the cpus
+     */
+    public void setCpus(Integer cpusIn) {
+        this.cpus = cpusIn;
+    }
+
+    /**
      * Checks if this system is physical.
      *
      * @return true, if it is physical
      */
-    public Boolean isPhysical() {
+    public boolean isPhysical() {
         return physical;
+    }
+
+    /**
+     * Sets if this system is physical.
+     *
+     * @param physicalIn  true, if it is physical
+     */
+    public void setPhysical(boolean physicalIn) {
+        this.physical = physicalIn;
     }
 
     /** {@inheritDoc} */

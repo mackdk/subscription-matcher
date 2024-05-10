@@ -29,13 +29,13 @@ public class Message implements Comparable<Message> {
     }
 
     /** The severity level of this message. */
-    public Level severity;
+    private final Level severity;
 
     /** A label identifying the message type. */
-    public String type;
+    private final String type;
 
     /** Arbitrary data connected to this message. */
-    public Map<String, String> data;
+    private final Map<String, String> data;
 
     /**
      * Instantiates a new message.
@@ -48,6 +48,30 @@ public class Message implements Comparable<Message> {
         severity = severityIn;
         type = typeIn;
         data = dataIn;
+    }
+
+    /**
+     * Gets the message severity.
+     * @return the severity
+     */
+    public Level getSeverity() {
+        return severity;
+    }
+
+    /**
+     * Gets the message type.
+     * @return the type
+     */
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * Gets the data map.
+     * @return the data map
+     */
+    public Map<String, String> getData() {
+        return data;
     }
 
     /** {@inheritDoc} */

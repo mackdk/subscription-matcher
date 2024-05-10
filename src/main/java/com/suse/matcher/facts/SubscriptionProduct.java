@@ -13,10 +13,10 @@ import org.kie.api.definition.type.PropertyReactive;
 public class SubscriptionProduct {
 
     /** The subscription id. */
-    public Long subscriptionId;
+    private final long subscriptionId;
 
     /** The product id. */
-    public Long productId;
+    private final long productId;
 
     /**
      * Instantiates a new installation relationship.
@@ -24,7 +24,7 @@ public class SubscriptionProduct {
      * @param subscriptionIdIn the subscription id
      * @param productIdIn the product id
      */
-    public SubscriptionProduct(Long subscriptionIdIn, Long productIdIn) {
+    public SubscriptionProduct(long subscriptionIdIn, long productIdIn) {
         subscriptionId = subscriptionIdIn;
         productId = productIdIn;
     }
@@ -34,7 +34,7 @@ public class SubscriptionProduct {
      *
      * @return the subscription id
      */
-    public Long getSubscriptionId() {
+    public long getSubscriptionId() {
         return subscriptionId;
     }
 
@@ -43,7 +43,7 @@ public class SubscriptionProduct {
      *
      * @return the product id
      */
-    public Long getProductId() {
+    public long getProductId() {
         return productId;
     }
 

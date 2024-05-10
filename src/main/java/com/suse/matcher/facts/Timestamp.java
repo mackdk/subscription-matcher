@@ -17,7 +17,7 @@ import java.util.Date;
 public class Timestamp {
 
     /** Current timestamp. */
-    public Date timestamp;
+    private final Date timestamp;
 
     /**
      * Instantiates a new current time.

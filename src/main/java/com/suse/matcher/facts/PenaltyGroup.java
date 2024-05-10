@@ -12,15 +12,15 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  */
 public class PenaltyGroup {
 
-    private int id;
-    private Long guestId;
+    private final int id;
+    private final long guestId;
 
     /**
      * Standard constructor.
      * @param idIn - the id
      * @param guestIdIn - the guest id
      */
-    public PenaltyGroup(int idIn, Long guestIdIn) {
+    public PenaltyGroup(int idIn, long guestIdIn) {
         id = idIn;
         guestId = guestIdIn;
     }
@@ -35,30 +35,12 @@ public class PenaltyGroup {
     }
 
     /**
-     * Sets the id.
-     *
-     * @param idIn - the id
-     */
-    public void setId(int idIn) {
-        id = idIn;
-    }
-
-    /**
      * Gets the guestId.
      *
      * @return guestId
      */
     public Long getGuestId() {
         return guestId;
-    }
-
-    /**
-     * Sets the guestId.
-     *
-     * @param guestIdIn - the guestId
-     */
-    public void setGuestId(Long guestIdIn) {
-        guestId = guestIdIn;
     }
 
     /** {@inheritDoc} */

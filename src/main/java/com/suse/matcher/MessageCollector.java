@@ -34,11 +34,11 @@ public class MessageCollector {
 
         // add messages about unsatisfied pins
         List<Message> messages = assignment.getProblemFactStream(PinnedMatch.class)
-            .filter(pin -> !confirmedMatchFacts.contains(Pair.of(pin.subscriptionId, pin.systemId)))
+            .filter(pin -> !confirmedMatchFacts.contains(Pair.of(pin.getSubscriptionId(), pin.getSystemId())))
             .map(unmatchedPin -> {
                 return new Message(Message.Level.INFO, "unsatisfied_pinned_match", new TreeMap<>(Map.of(
-                    "system_id", unmatchedPin.systemId.toString(),
-                    "subscription_id", unmatchedPin.subscriptionId.toString()
+                    "system_id", String.valueOf(unmatchedPin.getSystemId()),
+                    "subscription_id", String.valueOf(unmatchedPin.getSubscriptionId())
                 )));
             })
             .toList();

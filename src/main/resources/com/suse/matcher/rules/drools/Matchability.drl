@@ -24,13 +24,13 @@ rule "matchPhysicalOnlySubscription"
         $subscription : Subscription(
             id == $subscriptionId,
             policy == Policy.PHYSICAL_ONLY,
-            cpus >= $system.cpus,
+            cpus >= $system.getCpus(),
             ignored == false
         )
     then
-        int groupId = Drools.generateId($system.id, $productId, $subscription.id);
+        int groupId = Drools.generateId($system.getId(), $productId, $subscription.getId());
         insert(new CentGroup(groupId, 100));
-        insert(new PotentialMatch($system.id, $productId, $subscription.id, groupId, groupId));
+        insert(new PotentialMatch($system.getId(), $productId, $subscription.getId(), groupId, groupId));
 end
 
 rule "matchInstanceSubscription"
@@ -42,13 +42,13 @@ rule "matchInstanceSubscription"
         $subscription : Subscription(
             id == $subscriptionId,
             policy == Policy.INSTANCE,
-            (cpus == null || cpus >= $system.cpus),
+            (cpus == null || cpus >= $system.getCpus()),
             ignored == false
         )
     then
-        int groupId = Drools.generateId($system.id, $productId, $subscription.id);
+        int groupId = Drools.generateId($system.getId(), $productId, $subscription.getId());
         insert(new CentGroup(groupId, 100));
-        insert(new PotentialMatch($system.id, $productId, $subscription.id, groupId, groupId));
+        insert(new PotentialMatch($system.getId(), $productId, $subscription.getId(), groupId, groupId));
 end
 
 rule "matchUnlimitedVirtualizationSubscription"
@@ -63,14 +63,14 @@ rule "matchUnlimitedVirtualizationSubscription"
         $subscription : Subscription(
             id == $subscriptionId,
             policy == Policy.UNLIMITED_VIRTUALIZATION,
-            (cpus >= $system.cpus || stackable == true),
+            (cpus >= $system.getCpus() || stackable == true),
             ignored == false
         )
     then
-        Integer consumedQuantity = ($system.cpus + $subscription.cpus - 1) / $subscription.cpus;
-        int groupId = Drools.generateId($system.id, $subscription.id);
+        Integer consumedQuantity = ($system.getCpus() + $subscription.getCpus() - 1) / $subscription.getCpus();
+        int groupId = Drools.generateId($system.getId(), $subscription.getId());
         insert(new CentGroup(groupId, consumedQuantity * 100));
-        insert(new PotentialMatch($system.id, $productId, $subscription.id, groupId, groupId));
+        insert(new PotentialMatch($system.getId(), $productId, $subscription.getId(), groupId, groupId));
 end
 
 rule "matchFreeVirtualizationSubscription"
@@ -143,14 +143,12 @@ rule "match12Subscription"
     then
         int groupId = Drools.generateId($systemId, $productId, $subscriptionId);
         if ($physical) {
-            insert(new CentGroup(groupId, ($system.cpus + $subscription.cpus - 1) / $subscription.cpus * 100));
-            insert(new PotentialMatch($system.id, $productId, $subscription.id,
-                groupId,
-                groupId));
+            insert(new CentGroup(groupId, ($system.getCpus() + $subscription.getCpus() - 1) / $subscription.getCpus() * 100));
+            insert(new PotentialMatch($system.getId(), $productId, $subscription.getId(), groupId, groupId));
         }
         else {
             insert(new CentGroup(groupId, 50));
-            insert(new PotentialMatch($system.id, $productId, $subscription.id, groupId, groupId));
+            insert(new PotentialMatch($system.getId(), $productId, $subscription.getId(), groupId, groupId));
         }
 end
 
@@ -158,21 +156,21 @@ rule "mergeCentGroupsInBundles"
     agenda-group "Matchability"
     when
         $match1 : PotentialMatch()
-        Product(id == $match1.productId, productClass != null, $match1prodClass : productClass)
-        Subscription(id == $match1.subscriptionId, singleSubscriptionHardBundle == true)
+        Product(id == $match1.getProductId(), productClass != null, $match1prodClass : productClass)
+        Subscription(id == $match1.getSubscriptionId(), singleSubscriptionHardBundle == true)
         $match2 : PotentialMatch(
-            subscriptionId == $match1.subscriptionId,
-            centGroupId > $match1.centGroupId,
-            systemId == $match1.systemId,
-            productId != $match1.productId
+            subscriptionId == $match1.getSubscriptionId(),
+            centGroupId > $match1.getCentGroupId(),
+            systemId == $match1.getSystemId(),
+            productId != $match1.getProductId()
         )
-        Product(id == $match2.productId, productClass != $match1prodClass, productClass != null)
+        Product(id == $match2.getProductId(), productClass != $match1prodClass, productClass != null)
 
-        CentGroup(id == $match1.centGroupId, $cents : cents)
-        CentGroup(id == $match2.centGroupId, cents == $cents)
+        CentGroup(id == $match1.getCentGroupId(), $cents : cents)
+        CentGroup(id == $match2.getCentGroupId(), cents == $cents)
     then
         modify($match2) {
-            setCentGroupId($match1.centGroupId);
+            setCentGroupId($match1.getCentGroupId());
         }
 end
 
@@ -180,7 +178,7 @@ rule "retractOrphanedCentGroups"
     agenda-group "Matchability"
     when
         $cg : CentGroup() and
-        not PotentialMatch(centGroupId == $cg.id)
+        not PotentialMatch(centGroupId == $cg.getId())
     then
         retract($cg);
 end

@@ -13,10 +13,10 @@ import org.kie.api.definition.type.PropertyReactive;
 public class HostGuest {
 
     /** The host system id. */
-    public Long hostId;
+    private final long hostId;
 
     /** The guest system id. */
-    public Long guestId;
+    private final long guestId;
 
     /**
      * Instantiates a new host-to-guest relationship object.
@@ -24,7 +24,7 @@ public class HostGuest {
      * @param hostIdIn the host id
      * @param guestIdIn the guest id
      */
-    public HostGuest(Long hostIdIn, Long guestIdIn) {
+    public HostGuest(long hostIdIn, long guestIdIn) {
         hostId = hostIdIn;
         guestId = guestIdIn;
     }
@@ -34,7 +34,7 @@ public class HostGuest {
      *
      * @return the host id
      */
-    public Long getHostId() {
+    public long getHostId() {
         return hostId;
     }
 
@@ -43,7 +43,7 @@ public class HostGuest {
      *
      * @return the guest id
      */
-    public Long getGuestId() {
+    public long getGuestId() {
         return guestId;
     }
 

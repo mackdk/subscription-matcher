@@ -13,19 +13,19 @@ import org.kie.api.definition.type.PropertyReactive;
 public class Product {
 
     /** The product id. */
-    public Long id;
+    private final long id;
 
     /** The friendly name. */
-    public String name;
+    private final String name;
 
     /** The product class */
-    public String productClass;
+    private final String productClass;
 
     /** true if this is a free product. */
-    private Boolean free;
+    private final boolean free;
 
     /** true if this is a base product. */
-    private Boolean base;
+    private final boolean base;
 
     /**
      * Instantiates a new product.
@@ -36,7 +36,7 @@ public class Product {
      * @param freeIn true if this is a free product
      * @param baseIn true if this is a base product
      */
-    public Product(Long idIn, String nameIn, String productClassIn, Boolean freeIn, Boolean baseIn) {
+    public Product(long idIn, String nameIn, String productClassIn, boolean freeIn, boolean baseIn) {
         id = idIn;
         name = nameIn;
         productClass = productClassIn;
@@ -74,7 +74,7 @@ public class Product {
      *
      * @return true if this is a free product
      */
-    public Boolean getFree() {
+    public boolean isFree() {
         return free;
     }
 
@@ -83,17 +83,8 @@ public class Product {
      *
      * @return true if this is a base product
      */
-    public Boolean getBase() {
+    public boolean isBase() {
         return base;
-    }
-
-    /**
-     * Sets the productClass.
-     *
-     * @param productClassIn - the productClass
-     */
-    public void setProductClass(String productClassIn) {
-        productClass = productClassIn;
     }
 
     /** {@inheritDoc} */

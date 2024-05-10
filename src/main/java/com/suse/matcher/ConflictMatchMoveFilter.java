@@ -21,21 +21,17 @@ public class ConflictMatchMoveFilter implements SelectionFilter<Assignment, Chan
     @Override
     public boolean accept(ScoreDirector<Assignment> director, ChangeMove<Assignment> move) {
         boolean confirmed = (Boolean) move.getPlanningValues().iterator().next();
-
-        // we are confirming a Match
-        if (confirmed) {
-            Assignment solution = director.getWorkingSolution();
-            Match match = (Match) move.getPlanningEntities().iterator().next();
-            Set<Integer> conflictingIds = solution.getConflictingMatchIds(match.id)
-                .collect(Collectors.toSet());
-
-            // accept this Move only if no conflicting Match has been confirmed already
-            return solution.getMatches().stream()
-                .noneMatch(m -> m.confirmed == Boolean.TRUE && conflictingIds.contains(m.id));
-        }
-        else {
+        if (!confirmed) {
             // leaving a Match unconfirmed is always OK
             return true;
         }
+
+        // we are confirming a Match
+        Assignment solution = director.getWorkingSolution();
+        Match match = (Match) move.getPlanningEntities().iterator().next();
+        Set<Integer> conflictingIds = solution.getConflictingMatchIds(match.getId()).collect(Collectors.toSet());
+
+        // accept this Move only if no conflicting Match has been confirmed already
+        return solution.getMatches().stream().noneMatch(m -> m.isConfirmed() && conflictingIds.contains(m.getId()));
     }
 }

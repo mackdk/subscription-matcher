@@ -209,9 +209,6 @@ public class OutputWriter {
                 .sorted(Comparator.comparing(a -> a.id))
                 .collect(Collectors.toList());
 
-        Collection<InstalledProduct> installedProducts = assignment.getProblemFacts(InstalledProduct.class);
-        Collection<Product> products = assignment.getProblemFacts(Product.class);
-
         // prepare map from (system id, product id) to Match object
         Map<Pair<Long, Long>, JsonMatch> matchMap = new HashMap<>();
         for (JsonMatch match : confirmedMatchFacts) {
@@ -227,7 +224,7 @@ public class OutputWriter {
         try (FileWriter writer = new FileWriter(outputDirectory.resolve(CSV_UNMATCHED_PRODUCT_REPORT_FILE).toFile());
              CSVPrinter printer = new CSVPrinter(writer, csvFormat)) {
             // create map of product id -> set of systems ids with this product and filter out successful matches
-            Map<Long, Set<Long>> unmatchedProductSystems = installedProducts.stream()
+            Map<Long, Set<Long>> unmatchedProductSystems = assignment.getProblemFactStream(InstalledProduct.class)
                     .filter(sp -> matchMap.get(Pair.of(sp.systemId, sp.productId)) == null)
                     .collect(Collectors.groupingBy(
                         InstalledProduct::getProductId,
@@ -236,8 +233,9 @@ public class OutputWriter {
 
             List<CSVOutputUnmatchedProduct> unmatchedProductsCsvs = unmatchedProductSystems.entrySet().stream()
                     .map(e -> new CSVOutputUnmatchedProduct(
-                            productNameById(products, e.getKey()),
-                            e.getValue().stream().flatMap(sid -> systemById(systems, sid).stream()).collect(Collectors.toList())))
+                            productNameById(assignment, e.getKey()),
+                            e.getValue().stream().flatMap(sid -> systemById(systems, sid).stream()).collect(Collectors.toList())
+                    ))
                     .collect(Collectors.toList());
 
             // cant use java 8 forEach as printer throws a checked exception
@@ -254,8 +252,8 @@ public class OutputWriter {
                 .findFirst();
     }
 
-    private String productNameById(Collection<Product> products, Long productId) {
-        return products.stream()
+    private String productNameById(Assignment assignment, Long productId) {
+        return assignment.getProblemFactStream(Product.class)
                 .filter(p -> p.id.equals(productId))
                 .map(p -> p.name)
                 .findFirst()

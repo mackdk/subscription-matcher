@@ -1,9 +1,12 @@
 package com.suse.matcher;
 
-import com.suse.matcher.cli.Arguments;
-import com.suse.matcher.cli.CommandLineArguments;
-import com.suse.matcher.json.JsonInput;
-import com.suse.matcher.solver.Assignment;
+import com.suse.matcher.io.JsonIO;
+import com.suse.matcher.io.Log4J;
+import com.suse.matcher.io.OutputWriter;
+import com.suse.matcher.io.cli.Arguments;
+import com.suse.matcher.io.cli.CommandLineArguments;
+import com.suse.matcher.io.json.JsonInput;
+import com.suse.matcher.optimization.Assignment;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;

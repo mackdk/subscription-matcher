@@ -10,7 +10,9 @@ import java.util.Map;
 public class CSVOutputMessage {
 
     /** Header for the CSV output. */
-    public static final String[] CSV_HEADER = {"Message", "Additional data key", "Additional data value"};
+    public static String[] getHeaders() {
+        return new String[]{"Message", "Additional data key", "Additional data value"};
+    }
 
     /** A label identifying the message type. */
     private final String type;

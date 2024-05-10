@@ -12,8 +12,9 @@ import java.util.TimeZone;
 public class CSVOutputSubscription {
 
     /** Header for the CSV output. */
-    public static final String[] CSV_HEADER = { "Part Number", "Description",
-            "Policy", "Total Quantity", "Matched Quantity", "Start Date", "End Date"};
+    public static String[] getHeaders() {
+        return new String[]{"Part Number", "Description", "Policy", "Total Quantity", "Matched Quantity", "Start Date", "End Date"};
+    }
 
     /** The part number. */
     private final String partNumber;

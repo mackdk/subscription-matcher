@@ -12,11 +12,11 @@ import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFact
 import org.apache.logging.log4j.core.config.builder.api.RootLoggerComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 import org.apache.logging.log4j.core.impl.Log4jContextFactory;
-import org.apache.logging.log4j.spi.LoggerContextFactory;
 
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * Facade on the log4j logging library.
@@ -87,19 +87,26 @@ public class Log4J {
 
         Configuration configuration = builder.build();
         LoggerContext context = Configurator.initialize(configuration);
-
-        // Update the configuration in the running contexts. There might be multiple contexts because slf4j binds
-        // loggers by name, so the log4j compatibility layer cannot use the classloader to define the context
-        LoggerContextFactory contextFactory = LogManager.getFactory();
-        if (contextFactory instanceof Log4jContextFactory) {
-            List<LoggerContext> contexts = ((Log4jContextFactory) contextFactory).getSelector().getLoggerContexts();
-            contexts.stream()
-                .distinct()
-                .filter(ctx -> ctx != context)
-                .forEach(ctx -> ctx.updateLoggers(configuration));
+        if (context == null) {
+            throw new IllegalStateException("Unable to initialize Log4J 2 context");
         }
+
+        // Let's reconfigure all the running contexts where the configuration does not match
+        runningLoggingContextsStream(context)
+            .filter(ctx -> ctx.getConfiguration() != configuration)
+            .forEach(ctx -> ctx.reconfigure(configuration));
 
         return context;
     }
 
+    private static Stream<LoggerContext> runningLoggingContextsStream(LoggerContext createdContext) {
+        if (!(LogManager.getFactory() instanceof Log4jContextFactory)) {
+            return Stream.of(createdContext);
+        }
+
+        Log4jContextFactory contextFactory = (Log4jContextFactory) LogManager.getFactory();
+        List<LoggerContext> existingContexts = contextFactory.getSelector().getLoggerContexts();
+
+        return Stream.concat(Stream.of(createdContext), existingContexts.stream()).distinct();
+    }
 }

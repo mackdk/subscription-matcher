@@ -9,6 +9,7 @@ import java.util.Random;
 import java.util.function.BiFunction;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Various utility methods to deal with collections
@@ -17,6 +18,21 @@ public final class CollectionUtils {
 
     private CollectionUtils() {
         // Prevent instantiation
+    }
+
+
+    /**
+     * Create a stream from the given collection containing only the objects that are instance of the specified type.
+     * Each element is explicitly cast to the desired type.
+     * @param collection the collection
+     * @param type the desired type
+     * @return a stream of the objects within the given collection that are instance of the specified type.
+     * @param <T> the generic type
+     */
+    public static <T> Stream<T> typeStream(Collection<?> collection, Class<T> type) {
+        return collection.stream()
+            .filter(obj -> type.isInstance(obj))
+            .map(obj -> type.cast(obj));
     }
 
     /**

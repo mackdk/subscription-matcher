@@ -1,6 +1,7 @@
 package com.suse.matcher.deduction;
 
-import com.suse.matcher.deduction.facts.Message;
+import com.suse.matcher.deduction.facts.PotentialMatch;
+import com.suse.matcher.util.CollectionUtils;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -73,13 +74,13 @@ public class Drools {
             // collect results
             result = new ArrayList<>(session.getObjects());
 
-            // log deducted messages
-            result.stream()
-                .filter(o -> o instanceof Message)
-                .map(m -> (Message) m)
-                .filter(m -> m.getSeverity() == Message.Level.DEBUG)
-                .sorted()
-                .forEach(m -> LOGGER.debug("{}: {}", m.getType(), m.getData()));
+            LOGGER.info("Found {} potential matches", CollectionUtils.typeStream(result, PotentialMatch.class).count());
+            if (LOGGER.isDebugEnabled()) {
+                CollectionUtils.typeStream(result, PotentialMatch.class)
+                    .sorted()
+                    .forEach(pm -> LOGGER.debug("{}", pm));
+            }
+
         }
         finally {
             // cleanup

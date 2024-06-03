@@ -10,12 +10,16 @@ import com.suse.matcher.deduction.facts.InstalledProduct;
 import com.suse.matcher.deduction.facts.Timestamp;
 import com.suse.matcher.deduction.facts.VirtualizationGroupMember;
 
+import function com.suse.matcher.deduction.DeductionPhaseLogger.info;
+import function com.suse.matcher.deduction.DeductionPhaseLogger.warn;
+
 rule "ignoreExpiredSubscription"
     agenda-group "InputValidation"
     when
         Timestamp($timestamp : timestamp)
         $subscription: Subscription((endDate != null && endDate < $timestamp) || (startDate != null && startDate > $timestamp))
     then
+        info(kcontext, "Ignoring subscription {} - Expired", $subscription.getPartNumber());
         modify($subscription) {
             setIgnored(true);
         }
@@ -27,6 +31,7 @@ rule "ignoreNotActiveSubscriptions"
         $subscription : Subscription(startDate == null) or
         $subscription : Subscription(endDate == null)
     then
+        info(kcontext, "Ignoring subscription {} - Not active", $subscription.getPartNumber());
         modify($subscription) {
             setIgnored(true);
         }
@@ -42,6 +47,7 @@ rule "ignoreServiceSubscriptionsWithoutProducts"
             $count == 0
         )
     then
+        info(kcontext, "Ignoring subscription {} - Service subscription (no products)", $subscription.getPartNumber());
         // Create a message if it's not a known service subscription
         if (!$subscription.getPartNumber().startsWith("051-")) {
             TreeMap<String, String> msgData = new TreeMap<>();
@@ -58,6 +64,7 @@ rule "ignoreSubscriptionWithoutQuantity"
     when
         $subscription: Subscription(quantity == null)
     then
+        info(kcontext, "Ignoring subscription {} - Undefined quantity", $subscription.getPartNumber());
         modify($subscription) {
             setIgnored(true);
         }
@@ -77,6 +84,7 @@ rule "retractBlacklistedProduct"
         // open_enterprise_server 11.2
         $installedProduct : InstalledProduct(productId == 1242)
     then
+        info(kcontext, "Ignoring installed product {} - Blacklisted", $installedProduct);
         retract($installedProduct);
 end
 
@@ -86,6 +94,7 @@ rule "retractFreeProduct"
         Product($productId : id, free == true)
         $installedProduct : InstalledProduct(productId == $productId)
     then
+        info(kcontext, "Ignoring installed product {} - Free", $installedProduct);
         retract($installedProduct);
 end
 
@@ -97,6 +106,7 @@ rule "logUnknownPartNumber"
         TreeMap<String, String> data = new TreeMap<>();
         data.put("part_number", $subscription.getPartNumber());
         insert(new Message(Message.Level.DEBUG, "unknown_part_number", data));
+        warn(kcontext, "Unknown subscription part number {}", $subscription.getPartNumber());
 end
 
 rule "logPhysicalGuest"
@@ -110,6 +120,7 @@ rule "logPhysicalGuest"
         TreeMap<String, String> data = new TreeMap<>();
         data.put("id", String.valueOf($guestId));
         insert(new Message(Message.Level.DEBUG, "physical_guest", data));
+        warn(kcontext, "Guest system {} has physical = true. Setting to false.", $guestId);
         modify($guest) {
             setPhysical(false);
         }
@@ -129,6 +140,7 @@ rule "logMissingHost"
         TreeMap<String, String> data = new TreeMap<>();
         data.put("id", String.valueOf($guestId));
         insert(new Message(Message.Level.WARNING, "guest_with_unknown_host", data));
+        warn(kcontext, "Guest system {} has no host information. Considering it as physical.", $guestId);
         modify($guest) {
             setPhysical(true);
         }
@@ -142,6 +154,7 @@ rule "logMissingCpuCount"
         TreeMap<String, String> data = new TreeMap<>();
         data.put("id", String.valueOf($id));
         insert(new Message(Message.Level.WARNING, "unknown_cpu_count", data));
+        warn(kcontext, "Missing CPU count for system {}. Assuming 16 CPUs.", $id);
         modify($system) {
             setCpus(16);
         }

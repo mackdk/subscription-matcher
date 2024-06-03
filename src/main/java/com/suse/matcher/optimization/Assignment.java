@@ -1,6 +1,7 @@
 package com.suse.matcher.optimization;
 
 import com.suse.matcher.deduction.facts.PotentialMatch;
+import com.suse.matcher.util.CollectionUtils;
 
 import org.optaplanner.core.api.domain.solution.PlanningEntityCollectionProperty;
 import org.optaplanner.core.api.domain.solution.PlanningScore;
@@ -84,9 +85,7 @@ public class Assignment {
      * @return the facts as stream
      */
     public <T> Stream<T> getProblemFactStream(Class<T> type) {
-        return getProblemFacts().stream()
-            .filter(o -> type.isAssignableFrom(o.getClass()))
-            .map(o -> type.cast(o));
+        return CollectionUtils.typeStream(problemFacts, type);
     }
 
     public HardSoftScore getScore() {

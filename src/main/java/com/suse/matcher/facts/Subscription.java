@@ -311,7 +311,10 @@ public class Subscription implements Comparable<Subscription> {
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
             .append("id", id)
+            .append("partNumber", partNumber)
+            .append("policy", policy.name())
             .append("hardBundleId", hardBundleId)
+            .append("aggregatedSubscriptionId", aggregatedSubscriptionId)
             .toString();
     }
 }

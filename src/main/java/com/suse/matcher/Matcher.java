@@ -5,9 +5,7 @@ import com.suse.matcher.facts.PotentialMatch;
 import com.suse.matcher.json.JsonInput;
 import com.suse.matcher.solver.Assignment;
 import com.suse.matcher.solver.Match;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.suse.matcher.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,9 +21,6 @@ import java.util.stream.Stream;
  * Matches a list of systems to a list of subscriptions.
  */
 public class Matcher {
-
-    /** Logger instance. */
-    private static final Logger LOGGER = LogManager.getLogger(Matcher.class);
 
     /** true if the matcher is being tested. */
     private final boolean testing;
@@ -58,18 +53,6 @@ public class Matcher {
         // this is represented by Match objects, divide them from other facts
         List<Match> matches = getMatches(deducedFacts);
 
-        LOGGER.info("Found {} matches", matches.size());
-        if (LOGGER.isTraceEnabled()) {
-            matches.forEach(m -> {
-                LOGGER.trace(m.toString());
-                getPotentialMatches(deducedFacts)
-                    .filter(p -> p.groupId == m.id)
-                    .sorted()
-                    .map(o -> o.toString())
-                    .forEach(s -> LOGGER.trace(s));
-            });
-        }
-
         // compute the map of conflicts between Matches
         // this is used by the CSP solver to avoid bad solutions
         Map<Integer, List<List<Integer>>> conflictMap = getConflictMap(deducedFacts);
@@ -89,9 +72,7 @@ public class Matcher {
     }
 
     private Stream<PotentialMatch> getPotentialMatches(Collection<Object> deducedFacts) {
-        return deducedFacts.stream()
-                .filter(f -> f instanceof PotentialMatch)
-                .map(o -> (PotentialMatch)o);
+        return CollectionUtils.typeStream(deducedFacts, PotentialMatch.class);
     }
 
     private List<Match> getMatches(Collection<Object> deducedFacts) {

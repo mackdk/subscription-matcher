@@ -3,6 +3,8 @@ package com.suse.matcher.rules.drools;
 import com.suse.matcher.facts.Subscription;
 import com.suse.matcher.facts.SubscriptionProduct;
 
+import function com.suse.matcher.DeductionPhaseLogger.info;
+
 /**
  * This Agenda Group aggregates equal (same properties, same product set) OEM subscriptions into a single one
  *
@@ -57,6 +59,7 @@ rule "aggregateEqualStackableSubscriptions"
         TreeMap<String, String> msgData = new TreeMap<>();
         msgData.put("part_number", String.valueOf($s1.partNumber));
         insert(new Message(Message.Level.INFO, "merge_subscriptions", msgData));
+        info(kcontext, "Merging subscription {} into {} - Stackable OEM subscriptions", $s2.id, $s1.id);
 end
 
 // this rule has increased salience, so that it fires before the "cleanup" rules below
@@ -75,6 +78,7 @@ rule "adjustPinnedMatches"
         data.put("new_subscription_id", String.valueOf($s.aggregatedSubscriptionId));
         data.put("system_id", String.valueOf($pm.systemId));
         insert(new Message(Message.Level.INFO, "adjust_pinned_match", data));
+        info(kcontext, "Modifying pinned subscription for system {} from {} to {} - Stackable OEM subscriptions", $pm.systemId, $s.id, $s.aggregatedSubscriptionId);
 end
 
 rule "removeAggregatedSubscriptions"

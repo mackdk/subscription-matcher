@@ -1,9 +1,10 @@
 package com.suse.matcher;
 
 import com.suse.matcher.facts.OneTwoPenalty;
-import com.suse.matcher.facts.Penalty;
 import com.suse.matcher.solver.Assignment;
+import com.suse.matcher.util.CollectionUtils;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.optaplanner.core.api.solver.Solver;
@@ -57,9 +58,14 @@ public class OptaPlanner {
         result = solver.getBestSolution();
         LOGGER.info("{} matches confirmed", result.getMatches().stream().filter(m -> m.confirmed).count());
 
-        // show Penalty facts generated in Scores.drl using DroolsScoreDirector and re-calculating
-        // the score of the best solution because facts generated dynamically are not available outside of this object
         if (LOGGER.isDebugEnabled()) {
+            // Log confirmed matches
+            result.getMatches().stream()
+                .filter(m -> BooleanUtils.isTrue(m.confirmed))
+                .forEach(m -> LOGGER.debug("{}", m));
+
+            // show Penalty facts generated in Scores.drl using DroolsScoreDirector and re-calculating
+            // the score of the best solution because facts generated dynamically are not available outside of this object
             logOneTwoPenalties(solver, result);
         }
     }
@@ -79,13 +85,11 @@ public class OptaPlanner {
             director.setWorkingSolution(director.cloneSolution(result));
             director.calculateScore();
 
-            Collection<Penalty> penalties = director.getKieSession().getObjects(obj -> obj instanceof OneTwoPenalty)
-                .stream()
-                .map(f -> (Penalty) f)
+            Collection<OneTwoPenalty> penalties = CollectionUtils.typeStream(director.getKieSession().getObjects(), OneTwoPenalty.class)
                 .collect(Collectors.toList());
 
             LOGGER.debug("The best solution has {} penalties for 1-2 subscriptions.", penalties.size());
-            penalties.forEach(penalty -> LOGGER.debug(penalty.toString()));
+            penalties.forEach(penalty -> LOGGER.debug("{}", penalty));
         }
         catch (Exception ex) {
             LOGGER.debug("Number of penalties for 1-2 subscriptions not available: {}", ex.getMessage());

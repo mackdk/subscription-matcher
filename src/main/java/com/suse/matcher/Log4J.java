@@ -82,6 +82,14 @@ public class Log4J {
         builder.add(builder.newLogger("org.drools", level.orElse(Level.WARN)));
         builder.add(builder.newLogger("org.optaplanner", level.orElse(Level.WARN)));
         builder.add(builder.newLogger("org.kie", level.orElse(Level.WARN)));
+        // Package specific loggers
+        builder.add(builder.newLogger("com.suse.matcher", level.orElse(Level.INFO)));
+
+        builder.add(builder.newLogger("org.drools", level.orElse(Level.WARN)));
+        builder.add(builder.newLogger("org.optaplanner", level.orElse(Level.WARN)));
+        builder.add(builder.newLogger("org.kie", level.orElse(Level.WARN)));
+        builder.add(builder.newLogger("org.reflections", level.orElse(Level.WARN)));
+
         // DefaultAgenda is VERY noisy, let's override the user settings
         builder.add(builder.newLogger("org.drools.core.common.DefaultAgenda", Level.WARN));
 

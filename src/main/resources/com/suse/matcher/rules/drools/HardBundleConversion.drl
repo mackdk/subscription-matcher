@@ -7,6 +7,8 @@ import com.suse.matcher.facts.SubscriptionProduct;
 
 import java.util.TreeMap;
 
+import function com.suse.matcher.DeductionPhaseLogger.info;
+
 // Agenda group for converting old style hard bundles (consisting of more subscriptions)
 // into a single-subscription hard bundle
 
@@ -88,6 +90,7 @@ rule "mergePinnedMatches"
         data.put("new_subscription_id", String.valueOf($hardBundleId));
         data.put("system_id", String.valueOf($pinnedMatch.systemId));
         insert(new Message(Message.Level.INFO, "adjust_pinned_match", data));
+        info(kcontext, "Modifying pinned subscription for system {} from {} to {} - Hard bundle", $pinnedMatch.systemId, $subToRetractId, $hardBundleId);
 
         // we cannot use modify() because of attributes in hashCode, retract and insert instead
         insert(new PinnedMatch($pinnedMatch.systemId, $hardBundleId));
@@ -105,6 +108,7 @@ rule "removeRedundantSubscriptions"
         data.put("old_subscription_id", String.valueOf($subToRetract.id));
         data.put("new_subscription_id", String.valueOf($leadingSub.id));
         insert(new Message(Message.Level.INFO, "hb_merge_subscriptions", data));
+        info(kcontext, "Merging subscription {} into {} - Hard bundle", $subToRetract.id, $leadingSub.id);
 
         if ($leadingSub.name != null && $subToRetract.name != null) {
             modify($leadingSub) {

@@ -2,7 +2,11 @@
 <kmodule xmlns="http://www.drools.org/xsd/kmodule">
     <kbase name="matcher-base" default="true" eventProcessingMode="cloud" equalsBehavior="equality" packages="com.suse.matcher.rules.drools">
         <ksession name="matcher-session" type="stateful" default="true" clockType="realtime" beliefSystem="simple">
-            <consoleLogger name="logger" />
+            <listeners>
+                <ruleRuntimeEventListener type="com.suse.matcher.DeductionPhaseLogger"/>
+                <agendaEventListener type="com.suse.matcher.DeductionPhaseLogger"/>
+                <processEventListener type="com.suse.matcher.DeductionPhaseLogger"/>
+            </listeners>
         </ksession>
     </kbase>
 </kmodule>

@@ -15,13 +15,13 @@
 
 package com.suse.matcher.solver;
 
+import org.optaplanner.core.api.score.director.ScoreDirector;
 import org.optaplanner.core.impl.heuristic.selector.move.factory.MoveIteratorFactory;
-import org.optaplanner.core.impl.score.director.ScoreDirector;
 
 import java.util.Iterator;
 import java.util.Random;
 
-public class MatchSwapMoveIteratorFactory implements MoveIteratorFactory<Assignment> {
+public class MatchSwapMoveIteratorFactory implements MoveIteratorFactory<Assignment, MatchMove> {
 
     /** {@inheritDoc} */
     @Override

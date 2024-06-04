@@ -96,12 +96,12 @@
         <dependency>
             <groupId>org.drools</groupId>
             <artifactId>drools-engine-classic</artifactId>
-            <version>7.74.1.Final</version>
+            <version>8.44.0.Final</version>
         </dependency>
         <dependency>
             <groupId>org.optaplanner</groupId>
             <artifactId>optaplanner-core</artifactId>
-            <version>7.73.0.Final</version>
+            <version>9.44.0.Final</version>
         </dependency>
         <dependency>
             <groupId>commons-cli</groupId>
@@ -180,12 +180,6 @@
             <groupId>org.javassist</groupId>
             <artifactId>javassist</artifactId>
             <version>3.29.2-GA</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.javaparser</groupId>
-            <artifactId>javaparser-core</artifactId>
-            <version>3.25.1</version>
             <scope>runtime</scope>
         </dependency>
 

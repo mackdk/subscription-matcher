@@ -3,9 +3,9 @@ package com.suse.matcher;
 import com.suse.matcher.solver.Assignment;
 import com.suse.matcher.solver.Match;
 
+import org.optaplanner.core.api.score.director.ScoreDirector;
 import org.optaplanner.core.impl.heuristic.selector.common.decorator.SelectionFilter;
 import org.optaplanner.core.impl.heuristic.selector.move.generic.ChangeMove;
-import org.optaplanner.core.impl.score.director.ScoreDirector;
 
 import java.util.Set;
 import java.util.stream.Collectors;

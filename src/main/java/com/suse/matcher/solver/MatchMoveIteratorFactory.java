@@ -1,7 +1,7 @@
 package com.suse.matcher.solver;
 
+import org.optaplanner.core.api.score.director.ScoreDirector;
 import org.optaplanner.core.impl.heuristic.selector.move.factory.MoveIteratorFactory;
-import org.optaplanner.core.impl.score.director.ScoreDirector;
 
 import java.util.Iterator;
 import java.util.Random;
@@ -9,7 +9,7 @@ import java.util.Random;
 /**
  * A factory for {@link MatchMoveIterator}s.
  */
-public class MatchMoveIteratorFactory implements MoveIteratorFactory<Assignment> {
+public class MatchMoveIteratorFactory implements MoveIteratorFactory<Assignment, MatchMove> {
 
     /** {@inheritDoc} */
     @Override

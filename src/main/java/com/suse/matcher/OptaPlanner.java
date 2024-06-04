@@ -1,8 +1,6 @@
 package com.suse.matcher;
 
-import com.suse.matcher.facts.OneTwoPenalty;
 import com.suse.matcher.solver.Assignment;
-import com.suse.matcher.util.CollectionUtils;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.logging.log4j.LogManager;
@@ -13,13 +11,9 @@ import org.optaplanner.core.config.localsearch.LocalSearchPhaseConfig;
 import org.optaplanner.core.config.phase.PhaseConfig;
 import org.optaplanner.core.config.solver.EnvironmentMode;
 import org.optaplanner.core.config.solver.SolverConfig;
-import org.optaplanner.core.impl.score.director.ScoreDirectorFactory;
-import org.optaplanner.core.impl.score.director.drools.DroolsScoreDirectorFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
-import java.util.stream.Collectors;
 
 /**
  * Facade on the OptaPlanner solver.
@@ -66,32 +60,32 @@ public class OptaPlanner {
 
             // show Penalty facts generated in Scores.drl using DroolsScoreDirector and re-calculating
             // the score of the best solution because facts generated dynamically are not available outside of this object
-            logOneTwoPenalties(solverFactory.getScoreDirectorFactory(), configuration.getEnvironmentMode(), result);
+//            logOneTwoPenalties(solverFactory.getScoreDirectorFactory(), configuration.getEnvironmentMode(), result);
         }
     }
 
-    private static void logOneTwoPenalties(ScoreDirectorFactory<Assignment> scoreDirectorFactory,
-                                           EnvironmentMode environmentMode, Assignment result) {
-        // Make sure the runtime instances are of the correct types
-        if (!(scoreDirectorFactory instanceof DroolsScoreDirectorFactory)) {
-            return;
-        }
-
-        // Build a new score director and re-evaluate the score
-        try (var director = ((DroolsScoreDirectorFactory<Assignment>) scoreDirectorFactory).buildScoreDirector(true, environmentMode.isAsserted())) {
-            director.setWorkingSolution(director.cloneSolution(result));
-            director.calculateScore();
-
-            Collection<OneTwoPenalty> penalties = CollectionUtils.typeStream(director.getKieSession().getObjects(), OneTwoPenalty.class)
-                .collect(Collectors.toList());
-
-            LOGGER.debug("The best solution has {} penalties for 1-2 subscriptions.", penalties.size());
-            penalties.forEach(penalty -> LOGGER.debug("{}", penalty));
-        }
-        catch (Exception ex) {
-            LOGGER.debug("Number of penalties for 1-2 subscriptions not available: {}", ex.getMessage());
-        }
-    }
+//    private static void logOneTwoPenalties(ScoreDirectorFactory<Assignment> scoreDirectorFactory,
+//                                           EnvironmentMode environmentMode, Assignment result) {
+//        // Make sure the runtime instances are of the correct types
+//        if (!(scoreDirectorFactory instanceof DroolsScoreDirectorFactory)) {
+//            return;
+//        }
+//
+//        // Build a new score director and re-evaluate the score
+//        try (var director = ((DroolsScoreDirectorFactory<Assignment>) scoreDirectorFactory).buildScoreDirector(true, environmentMode.isAsserted())) {
+//            director.setWorkingSolution(director.cloneSolution(result));
+//            director.calculateScore();
+//
+//            Collection<OneTwoPenalty> penalties = CollectionUtils.typeStream(director.getKieSession().getObjects(), OneTwoPenalty.class)
+//                .collect(Collectors.toList());
+//
+//            LOGGER.debug("The best solution has {} penalties for 1-2 subscriptions.", penalties.size());
+//            penalties.forEach(penalty -> LOGGER.debug("{}", penalty));
+//        }
+//        catch (Exception ex) {
+//            LOGGER.debug("Number of penalties for 1-2 subscriptions not available: {}", ex.getMessage());
+//        }
+//    }
 
     /**
      * Configures and returns an OptaPlanner solver.

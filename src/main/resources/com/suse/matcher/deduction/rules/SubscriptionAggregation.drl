@@ -17,9 +17,20 @@ import function com.suse.matcher.deduction.DeductionPhaseLogger.info;
 // this rule has increased salience, so that it fires before the "cleanup" rules below
 rule "aggregateEqualStackableSubscriptions"
     salience 2
-    agenda-group "SubscriptionAggregation"
+    ruleflow-group "SubscriptionAggregation"
     when
-        $s1: Subscription(ignored == false, stackable == true, id < 0, aggregatedSubscriptionId == null || aggregatedSubscriptionId == id)
+        $s1: Subscription(ignored == false,
+            stackable == true,
+            id < 0,
+            aggregatedSubscriptionId == null || aggregatedSubscriptionId == id
+        )
+
+        // Ensure we aggregate starting from the subscription with the smallest id
+        not Subscription(ignored == false,
+            stackable == true,
+            id < $s1.getId(),
+            aggregatedSubscriptionId == null || aggregatedSubscriptionId == id
+        )
 
         $s2: Subscription(
             ignored == false,
@@ -33,7 +44,8 @@ rule "aggregateEqualStackableSubscriptions"
             policy == $s1.getPolicy(),
             cpus == $s1.getCpus(),
             sccUsername == $s1.getSccUsername(),
-            quantity == 1)
+            quantity == 1
+        )
 
         accumulate(
             $product1: SubscriptionProduct(subscriptionId == $s1.getId());
@@ -65,7 +77,7 @@ end
 // this rule has increased salience, so that it fires before the "cleanup" rules below
 rule "adjustPinnedMatches"
     salience 1
-    agenda-group "SubscriptionAggregation"
+    ruleflow-group "SubscriptionAggregation"
     when
         $s: Subscription(aggregatedSubscriptionId != null, id != aggregatedSubscriptionId)
         $pm: PinnedMatch(subscriptionId == $s.getId())
@@ -82,7 +94,7 @@ rule "adjustPinnedMatches"
 end
 
 rule "removeAggregatedSubscriptions"
-    agenda-group "SubscriptionAggregation"
+    ruleflow-group "SubscriptionAggregation"
     when
         $s: Subscription(aggregatedSubscriptionId != null, id != aggregatedSubscriptionId)
     then
@@ -90,7 +102,7 @@ rule "removeAggregatedSubscriptions"
 end
 
 rule "removeRedundantSubscriptionProducts"
-    agenda-group "SubscriptionAggregation"
+    ruleflow-group "SubscriptionAggregation"
     when
         $sp: SubscriptionProduct()
         not Subscription(id == $sp.getSubscriptionId())
@@ -99,7 +111,7 @@ rule "removeRedundantSubscriptionProducts"
 end
 
 rule "adjustAggregatedSubscriptionName"
-    agenda-group "SubscriptionAggregation"
+    ruleflow-group "SubscriptionAggregation"
     no-loop
     when
         $s: Subscription(aggregatedSubscriptionId == id, !name.startsWith("Aggregated:"))

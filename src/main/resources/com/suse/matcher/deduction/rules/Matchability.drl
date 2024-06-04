@@ -17,7 +17,7 @@ import com.suse.matcher.deduction.facts.System;
 global com.suse.matcher.deduction.FactIdGenerator idGenerator;
 
 rule "matchPhysicalOnlySubscription"
-    agenda-group "Matchability"
+    ruleflow-group "Matchability"
     when
         $system : System($systemId : id, physical == true)
         InstalledProduct($productId : productId, systemId == $systemId)
@@ -35,7 +35,7 @@ rule "matchPhysicalOnlySubscription"
 end
 
 rule "matchInstanceSubscription"
-    agenda-group "Matchability"
+    ruleflow-group "Matchability"
     when
         $system : System($systemId : id)
         InstalledProduct($productId : productId, systemId == $systemId)
@@ -53,7 +53,7 @@ rule "matchInstanceSubscription"
 end
 
 rule "matchUnlimitedVirtualizationSubscription"
-    agenda-group "Matchability"
+    ruleflow-group "Matchability"
     when
         $system : System($systemId : id, physical == true, cpus != null)
         (
@@ -75,7 +75,7 @@ rule "matchUnlimitedVirtualizationSubscription"
 end
 
 rule "matchFreeVirtualizationSubscription"
-    agenda-group "Matchability"
+    ruleflow-group "Matchability"
     when
       PotentialMatch($hostId : systemId, $productId : productId, $subscriptionId : subscriptionId)
       Subscription(id == $subscriptionId, policy == Policy.UNLIMITED_VIRTUALIZATION, ignored == false)
@@ -89,7 +89,7 @@ rule "matchFreeVirtualizationSubscription"
 end
 
 rule "matchInheritedVirtualization"
-    agenda-group "Matchability"
+    ruleflow-group "Matchability"
     no-loop
     when
         // for each base product
@@ -129,7 +129,7 @@ rule "matchInheritedVirtualization"
 end
 
 rule "match12Subscription"
-    agenda-group "Matchability"
+    ruleflow-group "Matchability"
     when
         // we want to explicitly bind 'physical' here as we want the rule to be reactivated on change of this attribute:
         $system : System($systemId : id, $physical : physical, cpus != null)
@@ -154,7 +154,7 @@ rule "match12Subscription"
 end
 
 rule "mergeCentGroupsInBundles"
-    agenda-group "Matchability"
+    ruleflow-group "Matchability"
     when
         $match1 : PotentialMatch()
         Product(id == $match1.getProductId(), productClass != null, $match1prodClass : productClass)
@@ -176,7 +176,7 @@ rule "mergeCentGroupsInBundles"
 end
 
 rule "retractOrphanedCentGroups"
-    agenda-group "Matchability"
+    ruleflow-group "Matchability"
     when
         $cg : CentGroup() and
         not PotentialMatch(centGroupId == $cg.getId())

@@ -13,7 +13,7 @@ import function com.suse.matcher.deduction.DeductionPhaseLogger.info;
 // into a single-subscription hard bundle
 
 rule "markHardBundledCandidates"
-    agenda-group "HardBundleConversion"
+    ruleflow-group "HardBundleConversion"
     when
         // for a subscription we look for another subscription with same attributes
         // if there is such a subscription, the original subscription is a hard bundle candidate
@@ -38,7 +38,7 @@ end
 // into the one with lower id. This way we make sure the hard bundle id is equal to the lowest
 // subscription ("leading subscription") id of all subscriptions in it.
 rule "mergeHardBundles"
-    agenda-group "HardBundleConversion"
+    ruleflow-group "HardBundleConversion"
     when
         // find 2 subscriptions with same attributes
         $leadingSub : Subscription(hardBundleId == id, ignored == false)
@@ -78,7 +78,7 @@ rule "mergeHardBundles"
 end
 
 rule "mergePinnedMatches"
-    agenda-group "HardBundleConversion"
+    ruleflow-group "HardBundleConversion"
     when
         // id of the "main" subscription in the hard bundle is equal to the hard bundle id
         Subscription(ignored == false, hardBundleId == id, $hardBundleId : hardBundleId)
@@ -98,7 +98,7 @@ rule "mergePinnedMatches"
 end
 
 rule "removeRedundantSubscriptions"
-    agenda-group "HardBundleConversion"
+    ruleflow-group "HardBundleConversion"
     when
         // out all of the subscriptions in a hard bundle, we keep the one with lowest id
         $leadingSub: Subscription(ignored == false, hardBundleId == id, singleSubscriptionHardBundle == true)

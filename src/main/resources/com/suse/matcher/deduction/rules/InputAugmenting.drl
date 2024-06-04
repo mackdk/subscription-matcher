@@ -10,7 +10,7 @@ import com.suse.matcher.deduction.facts.VirtualizationGroupMember;
 global com.suse.matcher.deduction.FactIdGenerator idGenerator;
 
 rule "generateHostedProduct"
-    agenda-group "InputAugmenting"
+    ruleflow-group "InputAugmenting"
     when
         System($systemId : id, physical == false)
         InstalledProduct(systemId == $systemId, $productId : productId)
@@ -20,7 +20,7 @@ rule "generateHostedProduct"
 end
 
 rule "generatePenaltyGroupsFromVirtualizationGroups"
-    agenda-group "InputAugmenting"
+    ruleflow-group "InputAugmenting"
     when
         VirtualizationGroupMember($virtualizationGroupId : virtualizationGroupId, $guestId : guestId)
     then
@@ -28,7 +28,7 @@ rule "generatePenaltyGroupsFromVirtualizationGroups"
 end
 
 rule "generatePenaltyGroups"
-    agenda-group "InputAugmenting"
+    ruleflow-group "InputAugmenting"
     when
         HostGuest($hostId : hostId, $guestId : guestId)
         not VirtualizationGroupMember(guestId == $guestId)

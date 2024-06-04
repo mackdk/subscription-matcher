@@ -50,10 +50,7 @@ public class Drools implements DeductionEngine {
 
     @Override
     public Collection<Object> deduce(Collection<Object> baseFacts) {
-        // start a new session
-        KieSession session = KieContainerHolder.INSTANCE.newKieSession();
-
-        try {
+        try (KieSession session = KieContainerHolder.INSTANCE.newKieSession())  {
             // Setup globals
             session.setGlobal("idGenerator", idGenerator);
 
@@ -80,12 +77,7 @@ public class Drools implements DeductionEngine {
                     .sorted()
                     .forEach(pm -> LOGGER.debug("{}", pm));
             }
-
             return result;
-        }
-        finally {
-            // cleanup
-            session.dispose();
         }
     }
 }

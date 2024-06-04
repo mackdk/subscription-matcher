@@ -19,7 +19,18 @@ rule "aggregateEqualStackableSubscriptions"
     salience 2
     agenda-group "SubscriptionAggregation"
     when
-        $s1: Subscription(ignored == false, stackable == true, id < 0, aggregatedSubscriptionId == null || aggregatedSubscriptionId == id)
+        $s1: Subscription(ignored == false,
+            stackable == true,
+            id < 0,
+            aggregatedSubscriptionId == null || aggregatedSubscriptionId == id
+        )
+
+        // Ensure we aggregate starting from the subscription with the smallest id
+        not Subscription(ignored == false,
+            stackable == true,
+            id < $s1.getId(),
+            aggregatedSubscriptionId == null || aggregatedSubscriptionId == id
+        )
 
         $s2: Subscription(
             ignored == false,
@@ -33,7 +44,8 @@ rule "aggregateEqualStackableSubscriptions"
             policy == $s1.policy,
             cpus == $s1.cpus,
             sccUsername == $s1.sccUsername,
-            quantity == 1)
+            quantity == 1
+        )
 
         accumulate(
             $product1: SubscriptionProduct(subscriptionId == $s1.id);

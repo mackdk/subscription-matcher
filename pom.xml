@@ -12,11 +12,6 @@
 
     <packaging>jar</packaging>
 
-    <properties>
-        <drools.version>7.17.0.Final</drools.version>
-        <optaplanner.version>7.17.0.Final</optaplanner.version>
-    </properties>
-
     <build>
         <resources>
             <resource>
@@ -100,13 +95,13 @@
         </dependency>
         <dependency>
             <groupId>org.drools</groupId>
-            <artifactId>drools-core</artifactId>
-            <version>${drools.version}</version>
+            <artifactId>drools-engine-classic</artifactId>
+            <version>7.74.1.Final</version>
         </dependency>
         <dependency>
             <groupId>org.optaplanner</groupId>
             <artifactId>optaplanner-core</artifactId>
-            <version>${optaplanner.version}</version>
+            <version>7.73.0.Final</version>
         </dependency>
         <dependency>
             <groupId>commons-cli</groupId>
@@ -152,40 +147,15 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>org.drools</groupId>
-            <artifactId>drools-compiler</artifactId>
-            <version>${drools.version}</version>
-            <scope>runtime</scope>
-            <exclusions>
-                <!-- ECJ has been moved to org.eclipse.jdt:ecj -->
-                <exclusion>
-                    <groupId>org.eclipse.jdt.core.compiler</groupId>
-                    <artifactId>ecj</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>org.mvel</groupId>
             <artifactId>mvel2</artifactId>
-            <version>2.2.6.Final</version>
+            <version>2.5.2.Final</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
             <version>1.15</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jdt</groupId>
-            <artifactId>ecj</artifactId>
-            <version>3.24.0</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.protobuf</groupId>
-            <artifactId>protobuf-java</artifactId>
-            <version>3.9.2</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -198,6 +168,24 @@
             <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>xstream</artifactId>
             <version>1.4.20</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr-runtime</artifactId>
+            <version>3.5.3</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>3.29.2-GA</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.javaparser</groupId>
+            <artifactId>javaparser-core</artifactId>
+            <version>3.25.1</version>
             <scope>runtime</scope>
         </dependency>
 

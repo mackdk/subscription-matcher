@@ -19916,6 +19916,20 @@ rule "Add subscription data for part number 874-008274"
         };
 end
 
+//SLES X86-64 1-2S ST S 3Y
+rule "Add subscription data for part number 874-008422"
+    agenda-group "PartNumbers"
+    when
+        $subscription : Subscription(partNumber == "874-008422")
+    then
+        modify($subscription) {
+            policy = Policy.PHYSICAL_ONLY,
+            supportLevel = "standard",
+            cpus = 2,
+            stackable = true
+        };
+end
+
 //novell linux desktop 9 managed by zenworks 7 linux management 1-device 1-year maintenance
 rule "Add subscription data for part number 877-001213"
     agenda-group "PartNumbers"

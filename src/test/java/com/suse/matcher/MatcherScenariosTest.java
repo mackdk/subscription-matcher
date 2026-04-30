@@ -162,7 +162,10 @@ class MatcherScenariosTest {
      * @return the provided JSON input for this scenario
      */
     private static JsonInput getJsonInput(int scenarioNumber) {
-        return JSON_IO.loadInput(getContentAsString(scenarioNumber, "input.json"));
+        JsonInput input = JSON_IO.loadInput(getContentAsString(scenarioNumber, "input.json"));
+        ScenarioValidator.validateInput(input);
+
+        return input;
     }
 
     /**
@@ -171,7 +174,10 @@ class MatcherScenariosTest {
      * @return the expected JSON output for this scenario
      */
     private static JsonOutput getJsonOutput(int scenarioNumber) {
-        return JSON_IO.loadOutput(getContentAsString(scenarioNumber, "output.json"));
+        JsonOutput output = JSON_IO.loadOutput(getContentAsString(scenarioNumber, "output.json"));
+        ScenarioValidator.validateOutput(output);
+
+        return output;
     }
 
     /**
@@ -192,9 +198,9 @@ class MatcherScenariosTest {
     }
 
     /**
-     * Retrieves the tille of the specified scenario
+     * Retrieves the title of the specified scenario
      * @param scenarioNumber the scenario number
-     * @return the title as specified in rt
+     * @return the title as specified in README.md
      */
     private static String getScenarioTitle(int scenarioNumber) {
         URL resource = MatcherScenariosTest.class.getResource(getResourcePath(scenarioNumber, "README.md"));

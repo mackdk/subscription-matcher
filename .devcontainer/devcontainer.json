@@ -37,7 +37,9 @@
                 "vscjava.vscode-java-test",
                 "vscjava.vscode-maven",
                 "vscjava.vscode-java-dependency",
-                "jim-moody.drools"
+                "jim-moody.drools",
+                "timonwong.shellcheck",
+                "jq-syntax-highlighting.jq-syntax-highlighting"
             ]
         }
     },

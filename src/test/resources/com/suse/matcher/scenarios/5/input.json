@@ -2,7 +2,7 @@
     "timestamp": "2015-05-01T00:00:00.000+0200",
     "pinned_matches": [
         {
-            "subscription_id": 4,
+            "subscription_id": 1,
             "system_id": 100
         }
     ],
@@ -16,7 +16,7 @@
     "subscriptions": [
         {
             "end_date": "2018-07-31T00:00:00Z",
-            "id": 4,
+            "id": 1,
             "part_number": "874-006876",
             "product_ids": [
                 669,
@@ -131,12 +131,12 @@
                 1307
             ],
             "quantity": 3,
-            "scc_username": "UC5",
+            "scc_username": "test-user-gurOoW",
             "start_date": "2013-08-01T00:00:00Z"
         },
         {
             "end_date": "2018-07-31T00:00:00Z",
-            "id": 5,
+            "id": 2,
             "part_number": "874-006876",
             "product_ids": [
                 669,
@@ -251,7 +251,7 @@
                 1307
             ],
             "quantity": 3,
-            "scc_username": "UC7",
+            "scc_username": "test-user-gSlYCk",
             "start_date": "2013-08-01T00:00:00Z"
         }
     ],

@@ -53,7 +53,7 @@
                 814
             ],
             "quantity": 5,
-            "scc_username": "UC7",
+            "scc_username": "test-user-egDCZ9",
             "start_date": "2015-01-01T00:00:00Z"
         },
         {
@@ -64,7 +64,7 @@
                 815
             ],
             "quantity": 1,
-            "scc_username": "UC7",
+            "scc_username": "test-user-egDCZ9",
             "start_date": "2015-01-01T00:00:00Z"
         }
     ],

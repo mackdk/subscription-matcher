@@ -11,17 +11,18 @@
 package com.suse.matcher;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Objects;
-
-import org.opentest4j.MultipleFailuresError;
 
 import com.suse.matcher.json.JsonInput;
 import com.suse.matcher.json.JsonOutput;
 import com.suse.matcher.json.JsonSubscription;
 import com.suse.matcher.json.JsonSystem;
 import com.suse.matcher.json.JsonVirtualizationGroup;
+
+import org.opentest4j.MultipleFailuresError;
+
+import java.util.Objects;
 
 /**
  * Utility class to validate the input and output of the scenario tests, ensuring the data
@@ -40,6 +41,16 @@ public class ScenarioValidator {
      * @param jsonInput the JSON input to validate
      */
     public static void validateInput(JsonInput jsonInput) {
+        assertNotNull(jsonInput, "The JSON input for the scenario cannot be null");
+        
+        assertAll("Missing required data in the input",
+            () -> assertNotNull(jsonInput.getSystems(), "systems must not be null"),
+            () -> assertNotNull(jsonInput.getProducts(), "products must not be null"),
+            () -> assertNotNull(jsonInput.getSubscriptions(), "subscriptions must not be null"),
+            () -> assertNotNull(jsonInput.getVirtualizationGroups(), "virtualization groups must not be null"),
+            () -> assertNotNull(jsonInput.getPinnedMatches(), "pinned matches must not be null")
+        );
+
         // Check that the input does not contain more than 100 systems, products and subscriptions to ensure the tests
         // runs in a reasonable time
         assertAll(
@@ -68,7 +79,7 @@ public class ScenarioValidator {
         jsonInput.getSubscriptions().forEach(subscription -> assertCorrect(subscription));
 
         jsonInput.getPinnedMatches().forEach(match -> {
-            assertSequentialSubscriptionId(match.getSubscriptionId());
+            assertSubscriptionIdInRange(match.getSubscriptionId());
         });
     }
 
@@ -88,17 +99,17 @@ public class ScenarioValidator {
 
         jsonOutput.getSubscriptions().forEach(subscription -> assertCorrect(subscription));
         jsonOutput.getSubscriptionPolicies().forEach((subscriptionId, policy) -> {
-            assertSequentialSubscriptionId(subscriptionId);
+            assertSubscriptionIdInRange(subscriptionId);
         });
 
         jsonOutput.getMatches().forEach(match -> {
-            assertSequentialSubscriptionId(match.getSubscriptionId());
+            assertSubscriptionIdInRange(match.getSubscriptionId());
         });
     }
 
     private static void assertCorrect(JsonSubscription subscription) throws MultipleFailuresError {
         assertAll(
-            () -> assertSequentialSubscriptionId(subscription.getId()),
+            () -> assertSubscriptionIdInRange(subscription.getId()),
             () -> assertTestUsername(subscription.getSccUsername())
         );
     }
@@ -111,7 +122,7 @@ public class ScenarioValidator {
             "SCC username does not match the expected pattern: " + sccUsername);
     }
 
-    private static void assertSequentialSubscriptionId(Long subscriptionId) {
+    private static void assertSubscriptionIdInRange(Long subscriptionId) {
         if (subscriptionId == null) {
             return;
         }

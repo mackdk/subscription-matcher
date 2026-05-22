@@ -31,6 +31,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -38,7 +39,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Tests {@link Matcher}.
+ * Tests {@link Matcher}. If you want to manually run one or more specific scenarios, you can use the
+ * {@link ScenarioSelector} annotation to specify the scenario number to run.
  */
 class MatcherScenariosTest {
 
@@ -139,8 +141,18 @@ class MatcherScenariosTest {
      * @return a collection of parameters to the constructor of this class
      */
     static Stream<Arguments> listScenarios() {
-        return Stream.iterate(1, MatcherScenariosTest::scenarioExists, i -> i + 1)
-            .map(scenarioNumber -> Arguments.of(scenarioNumber, getScenarioTitle(scenarioNumber)));
+        ScenarioSelector selector = MatcherScenariosTest.class.getAnnotation(ScenarioSelector.class);
+
+        Stream<Integer> scenarioStream;
+        if (selector != null) {
+            scenarioStream = Stream.iterate(selector.first(), MatcherScenariosTest::scenarioExists, i -> i + 1)
+                .takeWhile(scenarioNumber -> scenarioNumber <= selector.last())
+                .filter(scenarioNumber -> !Arrays.stream(selector.skip()).anyMatch(skip -> skip == scenarioNumber));
+        } else {
+            scenarioStream = Stream.iterate(1, MatcherScenariosTest::scenarioExists, i -> i + 1);
+        }
+
+        return scenarioStream.map(scenarioNumber -> Arguments.of(scenarioNumber, getScenarioTitle(scenarioNumber)));
     }
 
     /**

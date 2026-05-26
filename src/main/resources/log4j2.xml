@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" name="CliDynamicConfiguration">
+    <!-- Properties defaults, will be overridden at runtime by Log4J.initialize() -->
+    <Properties>
+        <Property name="internalLogLevel">INFO</Property>
+        <Property name="externalLogLevel">WARN</Property>
+        <Property name="logDir">NONE</Property>
+    </Properties>
+
+    <Appenders>
+        <Console name="Stdout" target="SYSTEM_ERR">
+            <PatternLayout pattern="%-5p %c{1} - %m%n"/>
+        </Console>
+
+        <!-- 
+            The Routing Appender acts like a switch-case statement.
+            The 'pattern' attribute is the variable we are switching on.
+        -->
+        <Routing name="RoutingFileAppender">
+            <Routes pattern="${logDir}">
+                <Route key="NONE">
+                    <Null name="NullAppender" />
+                </Route>
+                <Route>
+                    <RollingFile name="Rolling"
+                                 fileName="${logDir}/subscription-matcher.log"
+                                 filePattern="${logDir}/subscription-matcher.log.%i"
+                                 append="true">
+                        <PatternLayout pattern="%d %-5p %c{1} - %m%n"/>
+                        <Policies>
+                            <SizeBasedTriggeringPolicy size="20MB"/>
+                        </Policies>
+                        <DefaultRolloverStrategy max="10"/>
+                    </RollingFile>
+                </Route>
+            </Routes>
+        </Routing>
+    </Appenders>
+
+    <Loggers>
+        <Logger name="com.suse.matcher" level="${internalLogLevel}"/>
+
+        <Logger name="org.drools" level="${externalLogLevel}"/>
+        <Logger name="org.optaplanner" level="${externalLogLevel}"/>
+        <Logger name="org.kie" level="${externalLogLevel}"/>
+        <Logger name="org.reflections" level="${externalLogLevel}"/>
+
+        <!-- DefaultAgenda is VERY noisy, let's override the user settings -->
+        <Logger name="org.drools.core.common.DefaultAgenda" level="WARN"/>
+
+        <Root level="${internalLogLevel}">
+            <AppenderRef ref="Stdout"/>
+            <AppenderRef ref="RoutingFileAppender"/>
+        </Root>
+    </Loggers>
+</Configuration>

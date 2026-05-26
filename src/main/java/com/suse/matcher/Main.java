@@ -33,7 +33,7 @@ public class Main {
         }
 
         // Initialize the logging system
-        try (LoggerContext context = Log4J.initialize(arguments.getLoggingLevel(), arguments.getLoggingDirectory())) {
+        try (LoggerContext context = LoggingBootstrap.initialize(arguments.getLoggingLevel(), arguments.getLoggingDirectory())) {
             Logger logger = context.getLogger(Main.class);
             logger.info("Starting subscription-matcher process");
 

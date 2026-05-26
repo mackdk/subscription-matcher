@@ -26,18 +26,16 @@ import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Writes output (to disk or standard output).
@@ -45,6 +43,8 @@ import java.util.stream.Stream;
 public class OutputWriter {
 
     private static final Logger LOGGER = LogManager.getLogger(OutputWriter.class);
+
+    private static final Comparator<System> SYSTEMS_BY_NAME = Comparator.comparing(s -> Objects.requireNonNullElse(s.name, ""));
 
     // filenames
     private static final String JSON_INPUT_FILE = "input.json";
@@ -58,7 +58,7 @@ public class OutputWriter {
     private final Path outputDirectory;
 
     /** The CSV format. */
-    private CSVFormat csvFormat;
+    private final CSVFormat baseFormat;
 
     /**
      * Instantiates a new writer.
@@ -69,7 +69,9 @@ public class OutputWriter {
      */
     public OutputWriter(Path outputDirectoryIn, char delimiter) {
         outputDirectory = outputDirectoryIn;
-        csvFormat = CSVFormat.EXCEL.withDelimiter(delimiter);
+        baseFormat = CSVFormat.EXCEL.builder()
+            .setDelimiter(delimiter)
+            .build();
     }
 
     /**
@@ -145,49 +147,46 @@ public class OutputWriter {
             return s1Active - s2Active;
         };
 
-        Stream<Subscription> subscriptions = assignment.getProblemFactStream(Subscription.class)
+        // convert from match cents to count
+        Map<Long, Integer> matchedCounts = FactConverter.getMatches(assignment)
+            .collect(Collectors.groupingBy(
+                JsonMatch::getSubscriptionId,
+                Collectors.collectingAndThen(
+                    // Start at 0, map each match to its cents, and sum using addExact
+                    Collectors.reducing(0, JsonMatch::getCents, Math::addExact),
+                    // We want to count a subscription as used even if only a part of it is used.
+                    // So we round up the cents to the next full subscription.
+                    // see http://www.cs.nott.ac.uk/~psarb2/G51MPC/slides/NumberLogic.pdf
+                    cents -> (cents + 99) / 100
+                )
+            ));
+
+        List<CSVOutputSubscription> subscriptions = assignment.getProblemFactStream(Subscription.class)
             .filter(s -> s.policy != null)
             .filter(s -> s.startDate != null && s.endDate != null)
             .filter(s -> s.quantity != null && s.quantity > 0)
-            .sorted(activeSubsFirst.thenComparing(s -> s.partNumber));
-
-        Map<Long, CSVOutputSubscription> outsubs = new LinkedHashMap<>();
-        subscriptions.forEach(s -> {
-            CSVOutputSubscription csvs = new CSVOutputSubscription(
+            .sorted(activeSubsFirst.thenComparing(s -> s.partNumber))
+            .map(s -> new CSVOutputSubscription(
                 s.partNumber,
                 s.name,
                 s.policy.toString(),
                 s.quantity,
                 s.startDate,
-                s.endDate
-            );
-            outsubs.put(s.id, csvs);
-        });
+                s.endDate,
+                matchedCounts.getOrDefault(s.id, 0)
+            ))
+            .toList();
 
-        // compute cents by subscription id
-        Map<Long, Integer> matchedCents = new HashMap<>();
-        FactConverter.getMatches(assignment)
-            .forEach(m -> matchedCents.merge(m.getSubscriptionId(), m.getCents(), Math::addExact));
-
-        // update output
-        matchedCents.forEach((subscriptionId, cents) -> {
-            if (outsubs.containsKey(subscriptionId)) {
-                // convert from cents to count
-                // we want the potential matches (e.g. only 20 cents of a
-                // subscription is used) to be counted as an used subscription
-                // see http://www.cs.nott.ac.uk/~psarb2/G51MPC/slides/NumberLogic.pdf
-                outsubs.get(subscriptionId).setMatched((cents + 100 - 1) / 100);
-            }
-        });
-
-        // prepare header
-        csvFormat = csvFormat.withHeader(CSVOutputSubscription.CSV_HEADER);
+        // prepare the format
+        CSVFormat csvFormat = baseFormat.builder()
+            .setHeader(CSVOutputSubscription.getHeaders())
+            .build();
 
         // write CSV file
         try (FileWriter writer = new FileWriter(outputDirectory.resolve(CSV_SUBSCRIPTION_REPORT_FILE).toFile());
             CSVPrinter printer = new CSVPrinter(writer, csvFormat)) {
-            for (Map.Entry<Long, CSVOutputSubscription> item : outsubs.entrySet()) {
-                printer.printRecord(item.getValue().getCSVRow());
+            for (CSVOutputSubscription csv : subscriptions) {
+                printer.printRecord(csv.getCSVRow());
             }
         }
     }
@@ -199,29 +198,27 @@ public class OutputWriter {
      * @throws IOException if an I/O error occurs
      */
     public void writeCSVUnmatchedProductReport(Assignment assignment) throws IOException {
-        Collection<JsonMatch> confirmedMatchFacts = FactConverter.getMatches(assignment);
+        Map<Long, System> systemsMap = assignment.getProblemFactStream(System.class)
+                .collect(Collectors.toMap(System::getId, Function.identity()));
 
-        List<System> systems = assignment.getProblemFactStream(System.class)
-                .sorted(Comparator.comparing(a -> a.id))
-                .collect(Collectors.toList());
-
-        Collection<InstalledProduct> installedProducts = assignment.getProblemFacts(InstalledProduct.class);
-        Collection<Product> products = assignment.getProblemFacts(Product.class);
+        Map<Long, Product> productsMap = assignment.getProblemFactStream(Product.class)
+                .collect(Collectors.toMap(Product::getId, Function.identity()));
 
         // prepare map from (system id, product id) to Match object
         Map<Pair<Long, Long>, JsonMatch> matchMap = new HashMap<>();
-        for (JsonMatch match : confirmedMatchFacts) {
-            matchMap.put(Pair.of(match.getSystemId(), match.getProductId()), match);
-        }
+        FactConverter.getMatches(assignment)
+            .forEach(match -> matchMap.put(Pair.of(match.getSystemId(), match.getProductId()), match));
 
-        // prepare header
-        csvFormat = csvFormat.withHeader(CSVOutputUnmatchedProduct.CSV_HEADER);
+        // prepare the format
+        CSVFormat csvFormat = baseFormat.builder()
+            .setHeader(CSVOutputUnmatchedProduct.getHeaders())
+            .build();
 
         // write CSV file
         try (FileWriter writer = new FileWriter(outputDirectory.resolve(CSV_UNMATCHED_PRODUCT_REPORT_FILE).toFile());
              CSVPrinter printer = new CSVPrinter(writer, csvFormat)) {
             // create map of product id -> set of systems ids with this product and filter out successful matches
-            Map<Long, Set<Long>> unmatchedProductSystems = installedProducts.stream()
+            Map<Long, Set<Long>> unmatchedProductSystems = assignment.getProblemFactStream(InstalledProduct.class)
                     .filter(sp -> matchMap.get(Pair.of(sp.systemId, sp.productId)) == null)
                     .collect(Collectors.groupingBy(
                         InstalledProduct::getProductId,
@@ -229,31 +226,18 @@ public class OutputWriter {
                     ));
 
             List<CSVOutputUnmatchedProduct> unmatchedProductsCsvs = unmatchedProductSystems.entrySet().stream()
-                    .map(e -> new CSVOutputUnmatchedProduct(
-                            productNameById(products, e.getKey()),
-                            e.getValue().stream().flatMap(sid -> systemById(systems, sid).stream()).collect(Collectors.toList())))
-                    .collect(Collectors.toList());
+                    .map(e -> {
+                        String productName = getProductNameById(e.getKey(), productsMap);
+                        List<System> unmatchedSystems = getUnmatchedSystems(e.getValue(), systemsMap);
 
-            // cant use java 8 forEach as printer throws a checked exception
+                        return new CSVOutputUnmatchedProduct(productName, unmatchedSystems);
+                    })
+                    .toList();
+
             for (CSVOutputUnmatchedProduct csv : unmatchedProductsCsvs) {
-                csv.getUnmatchedSystems().sort((Comparator.comparing(s -> Objects.requireNonNullElse(s.name, ""))));
                 printer.printRecords(csv.getCSVRows());
             }
         }
-    }
-
-    private Optional<System> systemById(Collection<System> systems, Long systemId) {
-        return systems.stream()
-                .filter(s -> Objects.equals(systemId, s.getId()))
-                .findFirst();
-    }
-
-    private String productNameById(Collection<Product> products, Long productId) {
-        return products.stream()
-                .filter(p -> p.id.equals(productId))
-                .map(p -> p.name)
-                .findFirst()
-                .orElse("Unknown product (" + productId + ")");
     }
 
     /**
@@ -263,8 +247,10 @@ public class OutputWriter {
      * @throws IOException if an I/O error occurs
      */
     public void writeCSVMessageReport(Assignment assignment) throws IOException {
-        // prepare header
-        csvFormat = csvFormat.withHeader(CSVOutputMessage.CSV_HEADER);
+        // prepare the format
+        CSVFormat csvFormat = baseFormat.builder()
+            .setHeader(CSVOutputMessage.getHeaders())
+            .build();
 
         // write CSV file
         try (FileWriter writer = new FileWriter(outputDirectory.resolve(CSV_MESSAGE_REPORT_FILE).toFile());
@@ -273,13 +259,26 @@ public class OutputWriter {
             List<Message> messages = assignment.getProblemFactStream(Message.class)
                 .filter(m -> m.severity != Message.Level.DEBUG)
                 .sorted()
-                .collect(Collectors.toList());
+                .toList();
 
             for (Message message: messages) {
                 CSVOutputMessage csvMessage = new CSVOutputMessage(message.type, message.data);
                 printer.printRecords(csvMessage.getCSVRows());
             }
         }
+    }
+
+    private static List<System> getUnmatchedSystems(Set<Long> systemIds, Map<Long, System> systemsMap) {
+        return systemIds.stream()
+            .flatMap(sid -> Optional.ofNullable(systemsMap.get(sid)).stream())
+            .sorted(SYSTEMS_BY_NAME)
+            .toList();
+    }
+
+    private static String getProductNameById(Long productId, Map<Long, Product> productsMap) {
+        return Optional.ofNullable(productsMap.get(productId))
+                .map(p -> p.name)
+                .orElse("Unknown product (" + productId + ")");
     }
 
 }

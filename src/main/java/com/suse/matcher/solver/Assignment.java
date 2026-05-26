@@ -12,7 +12,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -85,23 +84,10 @@ public class Assignment implements Solution<HardSoftScore> {
      * @param type of the facts
      * @return the facts as stream
      */
-    @SuppressWarnings("unchecked") // no way around this in Java 8
     public <T> Stream<T> getProblemFactStream(Class<T> type) {
         return getProblemFacts().stream()
             .filter(o -> type.isAssignableFrom(o.getClass()))
-            .map(o -> (T)o);
-    }
-
-    /**
-     * Returns a Collection of problem facts filtered by type.
-     *
-     * @param <T> type of the facts
-     * @param type of the facts
-     * @return the facts as stream
-     */
-    public <T> Collection<T> getProblemFacts(Class<T> type) {
-        return getProblemFactStream(type)
-            .collect(Collectors.toList());
+            .map(o -> type.cast(o));
     }
 
     /**

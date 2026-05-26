@@ -14,7 +14,7 @@ import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 import org.apache.logging.log4j.core.impl.Log4jContextFactory;
 import org.apache.logging.log4j.spi.LoggerContextFactory;
 
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,7 +36,7 @@ public class Log4J {
      *
      * @return the Log4j 2 {@link LoggerContext}
      */
-    public static LoggerContext initialize(Optional<Level> level, Optional<String> loggingDirectory) {
+    public static LoggerContext initialize(Optional<Level> level, Optional<Path> loggingDirectory) {
         final ConfigurationBuilder<BuiltConfiguration> builder = ConfigurationBuilderFactory.newConfigurationBuilder();
 
         builder.setStatusLevel(Level.INFO);
@@ -59,8 +59,8 @@ public class Log4J {
         loggingDirectory.map(directory -> {
             AppenderComponentBuilder fileAppender = builder.newAppender("Rolling", "RollingFile");
 
-            fileAppender.addAttribute("fileName", Paths.get(directory, "subscription-matcher.log").toString())
-                        .addAttribute("filePattern", Paths.get(directory, "subscription-matcher.log.%i").toString())
+            fileAppender.addAttribute("fileName", directory.resolve("subscription-matcher.log").toString())
+                        .addAttribute("filePattern", directory.resolve("subscription-matcher.log.%i").toString())
                         .addAttribute("append", true)
                         .addComponent(builder.newComponent("DefaultRolloverStrategy")
                                              .addAttribute("max", 10))

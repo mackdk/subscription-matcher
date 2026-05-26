@@ -4,8 +4,8 @@ import com.suse.matcher.facts.CentGroup;
 import com.suse.matcher.facts.HostGuest;
 import com.suse.matcher.facts.InstalledProduct;
 import com.suse.matcher.facts.Message;
-import com.suse.matcher.facts.PotentialMatch;
 import com.suse.matcher.facts.PinnedMatch;
+import com.suse.matcher.facts.PotentialMatch;
 import com.suse.matcher.facts.Product;
 import com.suse.matcher.facts.Subscription;
 import com.suse.matcher.facts.SubscriptionProduct;
@@ -35,6 +35,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Converts JSON objects to facts (objects the rule engine and CSP solver can
@@ -117,7 +118,7 @@ public class FactConverter {
             .map(Timestamp::getTimestamp)
             .orElse(new Date());
 
-        List<JsonMatch> matches = getMatches(assignment);
+        List<JsonMatch> matches = getMatches(assignment).toList();
 
         List<JsonMessage> messages = assignment.getProblemFactStream(Message.class)
                 .sorted()
@@ -147,11 +148,11 @@ public class FactConverter {
     }
 
     /**
-     * Returns a list of {@link JsonMatch}es from the {@link Assignment}.
+     * Returns a stream of {@link JsonMatch}es from the {@link Assignment}.
      * @param assignment the assignment
      * @return matches
      */
-    public static List<JsonMatch> getMatches(Assignment assignment) {
+    public static Stream<JsonMatch> getMatches(Assignment assignment) {
         Set<Integer> confirmedGroupIds = assignment.getMatches().stream()
                 .filter(m -> m.confirmed)
                 .map(m -> m.id)
@@ -187,8 +188,7 @@ public class FactConverter {
                 .append(a.getSubscriptionId(), b.getSubscriptionId())
                 .append(a.getCents(), b.getCents())
                 .toComparison()
-            )
-            .collect(Collectors.toList());
+            );
     }
 
     /**

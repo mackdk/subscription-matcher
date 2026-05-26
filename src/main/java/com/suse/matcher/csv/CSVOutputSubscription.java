@@ -8,62 +8,19 @@ import java.util.TimeZone;
 
 /**
  * A subscription as represented in a CSV output file.
+ * @param partNumber the part number
+ * @param name the subscription name
+ * @param policy the subscription policy
+ * @param quantity the quantity
+ * @param startDate the start date
+ * @param endDate the end date
+ * @param matched number of subscriptions matched.
  */
-public class CSVOutputSubscription {
+public record CSVOutputSubscription(String partNumber, String name, String policy, Integer quantity, Date startDate, Date endDate, int matched) {
 
     /** Header for the CSV output. */
-    public static final String[] CSV_HEADER = { "Part Number", "Description",
-            "Policy", "Total Quantity", "Matched Quantity", "Start Date", "End Date"};
-
-    /** The part number. */
-    private final String partNumber;
-
-    /** The subscription name. */
-    private final String name;
-
-    /** The subscription policy. */
-    private final String policy;
-
-    /** The quantity. */
-    private final Integer quantity;
-
-    /** The start date. */
-    private final Date startDate;
-
-    /** The end date. */
-    private final Date endDate;
-
-    /** Number of subscriptions matched. */
-    private int matched;
-
-    /**
-     * Instantiates a new CSV output subscription.
-     *
-     * @param partNumberIn the part number
-     * @param nameIn the name
-     * @param policyIn the policy
-     * @param quantityIn the quantity
-     * @param startDateIn the start date
-     * @param endDateIn the end date
-     */
-    public CSVOutputSubscription(String partNumberIn, String nameIn, String policyIn,
-            Integer quantityIn, Date startDateIn, Date endDateIn) {
-        partNumber = partNumberIn;
-        name = nameIn;
-        policy = policyIn;
-        quantity = quantityIn;
-        startDate = startDateIn;
-        endDate = endDateIn;
-
-        matched = 0;
-    }
-
-    /**
-     * Sets the count of matched subscriptions of this type.
-     * @param matchedIn the count
-     */
-    public void setMatched(int matchedIn) {
-        this.matched = matchedIn;
+    public static String[] getHeaders() {
+        return new String[]{"Part Number", "Description", "Policy", "Total Quantity", "Matched Quantity", "Start Date", "End Date"};
     }
 
     /**

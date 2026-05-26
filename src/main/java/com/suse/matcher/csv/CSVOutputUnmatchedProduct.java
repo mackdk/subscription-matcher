@@ -8,36 +8,14 @@ import java.util.List;
 
 /**
  * A unmatched product as represented in a CSV output file.
+ * @param productName the product name
+ * @param unmatchedSystems the unmatched systems corresponding to the product
  */
-public class CSVOutputUnmatchedProduct {
+public record CSVOutputUnmatchedProduct(String productName, List<System> unmatchedSystems) {
 
     /**  Header for the CSV output. */
-    public static final String[] CSV_HEADER = {"Unmatched Product Name", "System Name","System ID", "CPUs"};
-
-    /** The product name. */
-    private final String productName;
-
-    /** Unmatched unmatchedSystems corresponding to product */
-    private final List<System> unmatchedSystems;
-
-    /**
-     * Standard constructor.
-     *
-     * @param  productNameIn - product name
-     * @param systemsIn - unmatched unmatchedSystems
-     */
-    public CSVOutputUnmatchedProduct(String productNameIn, List<System> systemsIn) {
-        productName = productNameIn;
-        unmatchedSystems = systemsIn;
-    }
-
-    /**
-     * Gets the unmatchedSystems.
-     *
-     * @return unmatchedSystems
-     */
-    public List<System> getUnmatchedSystems() {
-        return unmatchedSystems;
+    public static String[] getHeaders() {
+        return new String[]{"Unmatched Product Name", "System Name","System ID", "CPUs"};
     }
 
     /**

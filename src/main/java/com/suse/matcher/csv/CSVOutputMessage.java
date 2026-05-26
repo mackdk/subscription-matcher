@@ -6,27 +6,14 @@ import java.util.Map;
 
 /**
  * A message from the matcher as represented in a CSV output file.
+ * @param type a label identifying the message type
+ * @param data arbitrary data connected to this message.
  */
-public class CSVOutputMessage {
+public record CSVOutputMessage(String type, Map<String, String> data) {
 
     /** Header for the CSV output. */
-    public static final String[] CSV_HEADER = {"Message", "Additional data key", "Additional data value"};
-
-    /** A label identifying the message type. */
-    private final String type;
-
-    /** Arbitrary data connected to this message. */
-    private final Map<String, String> data;
-
-    /**
-     * Instantiates a new CSV output message.
-     *
-     * @param typeIn the type
-     * @param dataIn the data
-     */
-    public CSVOutputMessage(String typeIn, Map<String, String> dataIn) {
-        type = typeIn;
-        data = dataIn;
+    public static String[] getHeaders() {
+        return new String[]{"Message", "Additional data key", "Additional data value"};
     }
 
     /**

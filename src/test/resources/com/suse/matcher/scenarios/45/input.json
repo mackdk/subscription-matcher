@@ -21,9 +21,9 @@
             "name": "SLEM X86-64 1-16VC L3ST S 1Y",
             "product_ids": [
                 2605
-           ],
+            ],
             "quantity": 3,
-            "scc_username": "UC7",
+            "scc_username": "test-user-M9cRz5",
             "start_date": "2013-08-01T00:00:00Z"
         },
         {
@@ -33,10 +33,10 @@
             "name": "SLES X86/X86-64 1-2S ULVM PR S 1Y",
             "product_ids": [
                 2605,
-		2465
-           ],
+                2465
+            ],
             "quantity": 1,
-            "scc_username": "UC7",
+            "scc_username": "test-user-M9cRz5",
             "start_date": "2013-08-01T00:00:00Z"
         }
     ],
@@ -60,14 +60,16 @@
             ],
             "virtual_system_ids": []
         },
-	{
+        {
             "cpus": 2,
             "id": 102,
             "physical": true,
             "product_ids": [
                 2605
             ],
-            "virtual_system_ids": [ 103 ]
+            "virtual_system_ids": [
+                103
+            ]
         }
     ]
 }

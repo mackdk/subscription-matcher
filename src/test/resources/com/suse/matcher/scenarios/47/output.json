@@ -1,0 +1,72 @@
+{
+  "timestamp": "2026-01-08T00:00:02.812Z",
+  "matches": [
+    {
+      "system_id": 1000010001,
+      "subscription_id": 1,
+      "product_id": 2543,
+      "cents": 100
+    },
+    {
+      "system_id": 1000010002,
+      "subscription_id": 3,
+      "product_id": 1683,
+      "cents": 100
+    },
+    {
+      "system_id": 1000010003,
+      "subscription_id": 2,
+      "product_id": 2007,
+      "cents": 100
+    }
+  ],
+  "subscription_policies": {
+    "1": "one_two",
+    "2": "unlimited_virtualization",
+    "3": "one_two"
+  },
+  "messages": [],
+  "subscriptions": [
+    {
+      "id": 1,
+      "part_number": "P-874-008272-C",
+      "name": "SUSE Multi-Linux Support Enterprise, x86-64, 1-2 Sockets or 1-2 Virtual Machines, Priority Subscription, 3 Year, Promotion",
+      "quantity": 1,
+      "start_date": "2025-11-01T00:00:00.000Z",
+      "end_date": "2028-10-31T00:00:00.000Z",
+      "scc_username": "test-user-LBdRmo",
+      "product_ids": [
+        -38,
+        -36,
+        2543
+      ]
+    },
+    {
+      "id": 2,
+      "part_number": "P-874-008273-C",
+      "name": "SUSE Multi-Linux Support Enterprise, x86-64, 1-2 Sockets with Unlimited Virtual Machines, Priority Subscription, 3 Year, Promotion",
+      "quantity": 1,
+      "start_date": "2025-11-01T00:00:00.000Z",
+      "end_date": "2028-10-31T00:00:00.000Z",
+      "scc_username": "test-user-LBdRmo",
+      "product_ids": [
+        -24,
+        -23,
+        2007
+      ]
+    },
+    {
+      "id": 3,
+      "part_number": "P-874-008285-C",
+      "name": "SUSE Multi-Linux Support Professional, x86-64, 1-99 subscriptions, 1-2 Sockets or 1-2 Virtual Machines, Priority Subscription, 1 Year, Promotion",
+      "quantity": 1,
+      "start_date": "2025-11-01T00:00:00.000Z",
+      "end_date": "2028-10-31T00:00:00.000Z",
+      "scc_username": "test-user-LBdRmo",
+      "product_ids": [
+        -12,
+        1683
+      ]
+    }
+  ]
+}

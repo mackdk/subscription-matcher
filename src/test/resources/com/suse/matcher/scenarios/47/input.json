@@ -1,0 +1,141 @@
+{
+  "timestamp": "2026-01-08T00:00:02.812Z",
+  "systems": [
+    {
+      "id": 1000010001,
+      "cpus": 1,
+      "physical": true,
+      "virtual_host": false,
+      "virtual_system_ids": [],
+      "product_ids": [
+        -38,
+        2543
+      ]
+    },
+    {
+      "id": 1000010002,
+      "cpus": 1,
+      "physical": true,
+      "virtual_host": false,
+      "virtual_system_ids": [],
+      "product_ids": [
+        -12,
+        1683
+      ]
+    },
+    {
+      "id": 1000010003,
+      "cpus": 1,
+      "physical": true,
+      "virtual_host": false,
+      "virtual_system_ids": [],
+      "product_ids": [
+        -24,
+        2007
+      ]
+    }
+  ],
+  "virtualization_groups": [],
+  "products": [
+    {
+      "id": -12,
+      "name": "CentOS 7 x86_64",
+      "product_class": "SLE-M-T",
+      "base": true,
+      "free": true
+    },
+    {
+      "id": 1683,
+      "name": "SUSE Manager Client Tools for RHEL, Liberty and Clones 7 x86_64",
+      "product_class": "SLE-M-T",
+      "base": false,
+      "free": false
+    },
+    {
+      "id": -23,
+      "name": "AlmaLinux 8 x86_64",
+      "product_class": "SLE-M-T",
+      "base": true,
+      "free": true
+    },
+    {
+      "id": -24,
+      "name": "Rocky Linux 8 x86_64",
+      "product_class": "SLE-M-T",
+      "base": true,
+      "free": true
+    },
+    {
+      "id": 2007,
+      "name": "SUSE Manager Client Tools for RHEL, Liberty and Clones 8 x86_64",
+      "product_class": "SLE-M-T",
+      "base": false,
+      "free": false
+    },
+    {
+      "id": -36,
+      "name": "Rocky Linux 9 x86_64",
+      "product_class": "SLE-M-T",
+      "base": true,
+      "free": true
+    },
+    {
+      "id": -38,
+      "name": "AlmaLinux 9 x86_64",
+      "product_class": "SLE-M-T",
+      "base": true,
+      "free": true
+    },
+    {
+      "id": 2543,
+      "name": "SUSE Manager Client Tools for RHEL, Liberty and Clones 9 x86_64",
+      "product_class": "SLE-M-T",
+      "base": false,
+      "free": false
+    }
+  ],
+  "subscriptions": [
+    {
+      "id": 1,
+      "part_number": "P-874-008272-C",
+      "name": "SUSE Multi-Linux Support Enterprise, x86-64, 1-2 Sockets or 1-2 Virtual Machines, Priority Subscription, 3 Year, Promotion",
+      "quantity": 1,
+      "start_date": "2025-11-01T00:00:00.000Z",
+      "end_date": "2028-10-31T00:00:00.000Z",
+      "scc_username": "test-user-LBdRmo",
+      "product_ids": [
+        -36,
+        -38,
+        2543
+      ]
+    },
+    {
+      "id": 2,
+      "part_number": "P-874-008273-C",
+      "name": "SUSE Multi-Linux Support Enterprise, x86-64, 1-2 Sockets with Unlimited Virtual Machines, Priority Subscription, 3 Year, Promotion",
+      "quantity": 1,
+      "start_date": "2025-11-01T00:00:00.000Z",
+      "end_date": "2028-10-31T00:00:00.000Z",
+      "scc_username": "test-user-LBdRmo",
+      "product_ids": [
+        -23,
+        -24,
+        2007
+      ]
+    },
+    {
+      "id": 3,
+      "part_number": "P-874-008285-C",
+      "name": "SUSE Multi-Linux Support Professional, x86-64, 1-99 subscriptions, 1-2 Sockets or 1-2 Virtual Machines, Priority Subscription, 1 Year, Promotion",
+      "quantity": 1,
+      "start_date": "2025-11-01T00:00:00.000Z",
+      "end_date": "2028-10-31T00:00:00.000Z",
+      "scc_username": "test-user-LBdRmo",
+      "product_ids": [
+        -12,
+        1683
+      ]
+    }
+  ],
+  "pinned_matches": []
+}

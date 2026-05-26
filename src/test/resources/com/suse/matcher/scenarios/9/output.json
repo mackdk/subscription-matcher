@@ -3,32 +3,32 @@
   "matches": [
     {
       "system_id": 100,
-      "subscription_id": 4,
+      "subscription_id": 1,
       "product_id": 1300,
       "cents": 200
     },
     {
       "system_id": 200,
-      "subscription_id": 5,
+      "subscription_id": 2,
       "product_id": 1288,
       "cents": 100
     },
     {
       "system_id": 200,
-      "subscription_id": 4,
+      "subscription_id": 1,
       "product_id": 1300,
       "cents": 0
     }
   ],
   "subscription_policies": {
-    "4": "unlimited_virtualization",
-    "5": "instance"
+    "1": "unlimited_virtualization",
+    "2": "instance"
   },
   "messages": [],
   "subscriptions": [
     {
       "end_date": "2015-07-31T00:00:00Z",
-      "id": 4,
+      "id": 1,
       "part_number": "874-006876",
       "product_ids": [
         669,
@@ -143,12 +143,12 @@
         1307
       ],
       "quantity": 2,
-      "scc_username": "UC7",
+      "scc_username": "test-user-XgjF6Y",
       "start_date": "2013-08-01T00:00:00Z"
     },
     {
       "end_date": "2015-07-31T00:00:00Z",
-      "id": 5,
+      "id": 2,
       "part_number": "874-006385",
       "product_ids": [
         1090,
@@ -159,7 +159,7 @@
         1317
       ],
       "quantity": 1,
-      "scc_username": "UC7",
+      "scc_username": "test-user-XgjF6Y",
       "start_date": "2013-08-01T00:00:00Z"
     }
   ]

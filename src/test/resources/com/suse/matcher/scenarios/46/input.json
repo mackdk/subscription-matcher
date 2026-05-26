@@ -21,9 +21,9 @@
             "name": "SLEM X86-64 1-16VC L3ST S 1Y",
             "product_ids": [
                 2605
-           ],
+            ],
             "quantity": 10,
-            "scc_username": "UC7",
+            "scc_username": "test-user-mei36Y",
             "start_date": "2013-08-01T00:00:00Z"
         }
     ],
@@ -47,14 +47,16 @@
             ],
             "virtual_system_ids": []
         },
-	{
+        {
             "cpus": 2,
             "id": 102,
             "physical": true,
             "product_ids": [
                 2605
             ],
-            "virtual_system_ids": [ 103 ]
+            "virtual_system_ids": [
+                103
+            ]
         }
     ]
 }

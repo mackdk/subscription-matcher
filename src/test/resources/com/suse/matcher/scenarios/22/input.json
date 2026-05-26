@@ -27,7 +27,7 @@
                 1298
             ],
             "quantity": 1,
-            "scc_username": "UC7",
+            "scc_username": "test-user-Bo9Qgd",
             "start_date": "2015-01-01T00:00:00Z"
         },
         {
@@ -38,7 +38,7 @@
                 1299
             ],
             "quantity": 2,
-            "scc_username": "UC7",
+            "scc_username": "test-user-Bo9Qgd",
             "start_date": "2015-01-01T00:00:00Z"
         },
         {
@@ -49,7 +49,7 @@
                 1300
             ],
             "quantity": 4,
-            "scc_username": "UC7",
+            "scc_username": "test-user-Bo9Qgd",
             "start_date": "2013-08-01T00:00:00Z"
         }
     ],

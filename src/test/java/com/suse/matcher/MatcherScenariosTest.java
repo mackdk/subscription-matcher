@@ -60,7 +60,7 @@ class MatcherScenariosTest {
 
     @BeforeAll
     static void initLoggerContext() {
-        loggerContext = Log4J.initialize(Optional.empty(), Optional.empty());
+        loggerContext = LoggingBootstrap.initialize(Optional.empty(), Optional.empty());
     }
 
     @AfterAll

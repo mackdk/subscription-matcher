@@ -19972,6 +19972,21 @@ rule "Add subscription data for part number 874-008422"
         };
 end
 
+//SLE SAP X86-64 1-2S/VM PR S 1Y
+rule "Add subscription data for part number 874-008433-C"
+    agenda-group "PartNumbers"
+    when
+        $subscription : Subscription(partNumber == "874-008433-C")
+    then
+        modify($subscription) {
+            policy = Policy.ONE_TWO,
+            supportLevel = "priority",
+            cpus = 2,
+            singleSubscriptionHardBundle = true,
+            stackable = true
+        };
+end
+
 //SLES W/SMLMLM+ X86-64 1-2S/VM ST 1Y
 rule "Add subscription data for part number 874-008517-C"
     agenda-group "PartNumbers"

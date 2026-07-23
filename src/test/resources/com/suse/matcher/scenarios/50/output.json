@@ -1,0 +1,27 @@
+{
+  "timestamp": "2026-07-23T00:30:00.000+01",
+  "matches": [],
+  "subscription_policies": {
+    "1": "one_two",
+    "2": "one_two"
+  },
+  "messages": [],
+  "subscriptions": [
+    {
+      "id": 1,
+      "part_number": "874-006905",
+      "name": "SUSE Linux Enterprise Server for SAP Applications, x86-64, 1-2 Sockets or 1-2 Virtual Machines, Priority Subscription, Activation Key",
+      "quantity": 4,
+      "start_date": "2026-07-23T00:30:00.000+01",
+      "end_date": "2027-07-23T00:30:00.000+01"
+    },
+    {
+      "id": 2,
+      "part_number": "874-008433-C",
+      "name": "SUSE Linux Enterprise Server for SAP Applications, x86-64, 1-2 Sockets or 1-2 Virtual Machines, Priority Subscription, 1 Year",
+      "quantity": 7,
+      "start_date": "2026-07-23T00:30:00.000+01",
+      "end_date": "2027-07-23T00:30:00.000+01"
+    }
+  ]
+}

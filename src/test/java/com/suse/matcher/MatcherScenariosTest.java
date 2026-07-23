@@ -127,7 +127,7 @@ class MatcherScenariosTest {
                 // Verify the content is the same, apart from the order
                 assertEquals(expectedContent.stream().skip(1).sorted().collect(Collectors.joining("\n")),
                     actualContent.stream().skip(1).sorted().collect(Collectors.joining("\n")),
-                    "Csv content " + csvFile + "do not match");
+                    "Csv content " + csvFile + " do not match");
             } catch(IOException ex) {
                 fail("Unable to verify CSV files");
             }

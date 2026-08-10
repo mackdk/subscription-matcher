@@ -14573,6 +14573,19 @@ rule "Add subscription data for part number 874-007817"
         };
 end
 
+//MGR X86-64 1 INS 1Y
+rule "Add subscription data for part number 874-007830"
+    agenda-group "PartNumbers"
+    when
+        $subscription : Subscription(partNumber == "874-007830")
+    then
+        modify($subscription) {
+            policy = Policy.INSTANCE,
+            supportLevel = "basic",
+            stackable = false
+        };
+end
+
 //SLES 11SP4 LTECS X86-64 UL INST INH 1Y
 rule "Add subscription data for part number 874-007831"
     agenda-group "PartNumbers"
@@ -19916,11 +19929,39 @@ rule "Add subscription data for part number 874-008274"
         };
 end
 
+//SLES X86-64 1-2S UVM PR S 3Y
+rule "Add subscription data for part number 874-008395"
+    agenda-group "PartNumbers"
+    when
+        $subscription : Subscription(partNumber == "874-008395")
+    then
+        modify($subscription) {
+            policy = Policy.UNLIMITED_VIRTUALIZATION,
+            supportLevel = "priority",
+            cpus = 2,
+            stackable = true
+        };
+end
+
 //SLES X86-64 1-2S UVM ST S 1Y
 rule "Add subscription data for part number 874-008397"
     agenda-group "PartNumbers"
     when
         $subscription : Subscription(partNumber == "874-008397")
+    then
+        modify($subscription) {
+            policy = Policy.UNLIMITED_VIRTUALIZATION,
+            supportLevel = "standard",
+            cpus = 2,
+            stackable = true
+        };
+end
+
+//SLES X86-64 1-2S UVM ST S 3Y
+rule "Add subscription data for part number 874-008398"
+    agenda-group "PartNumbers"
+    when
+        $subscription : Subscription(partNumber == "874-008398")
     then
         modify($subscription) {
             policy = Policy.UNLIMITED_VIRTUALIZATION,
@@ -19977,6 +20018,36 @@ rule "Add subscription data for part number 874-008433-C"
     agenda-group "PartNumbers"
     when
         $subscription : Subscription(partNumber == "874-008433-C")
+    then
+        modify($subscription) {
+            policy = Policy.ONE_TWO,
+            supportLevel = "priority",
+            cpus = 2,
+            singleSubscriptionHardBundle = true,
+            stackable = true
+        };
+end
+
+//SLE SAP PWR 1-2S ULVM L3 PR S 1Y
+rule "Add subscription data for part number 874-008472-C"
+    agenda-group "PartNumbers"
+    when
+        $subscription : Subscription(partNumber == "874-008472-C")
+    then
+        modify($subscription) {
+            policy = Policy.UNLIMITED_VIRTUALIZATION,
+            supportLevel = "l3-priority",
+            cpus = 2,
+            singleSubscriptionHardBundle = true,
+            stackable = true
+        };
+end
+
+//SLES W/SMLMLM+ X86-64 1-2S/VM PR 3Y
+rule "Add subscription data for part number 874-008515-C"
+    agenda-group "PartNumbers"
+    when
+        $subscription : Subscription(partNumber == "874-008515-C")
     then
         modify($subscription) {
             policy = Policy.ONE_TWO,

@@ -34,42 +34,42 @@ public class ScenarioValidator {
         assertNotNull(jsonInput, "The JSON input for the scenario cannot be null");
         
         assertAll("Missing required data in the input",
-            () -> assertNotNull(jsonInput.getSystems(), "systems must not be null"),
-            () -> assertNotNull(jsonInput.getProducts(), "products must not be null"),
-            () -> assertNotNull(jsonInput.getSubscriptions(), "subscriptions must not be null"),
-            () -> assertNotNull(jsonInput.getVirtualizationGroups(), "virtualization groups must not be null"),
-            () -> assertNotNull(jsonInput.getPinnedMatches(), "pinned matches must not be null")
+            () -> assertNotNull(jsonInput.systems(), "systems must not be null"),
+            () -> assertNotNull(jsonInput.products(), "products must not be null"),
+            () -> assertNotNull(jsonInput.subscriptions(), "subscriptions must not be null"),
+            () -> assertNotNull(jsonInput.virtualizationGroups(), "virtualization groups must not be null"),
+            () -> assertNotNull(jsonInput.pinnedMatches(), "pinned matches must not be null")
         );
 
         // Check that the input does not contain more than 100 systems, products and subscriptions to ensure the tests
         // runs in a reasonable time
         assertAll(
-            () -> assertTrue(jsonInput.getSystems().size() <= 100,
+            () -> assertTrue(jsonInput.systems().size() <= 100,
                 "The number of systems in the input is too high for a test scenario"),
-            () -> assertTrue(jsonInput.getProducts().size() <= 100,
+            () -> assertTrue(jsonInput.products().size() <= 100,
                 "The number of products in the input is too high for a test scenario"),
-            () -> assertTrue(jsonInput.getSubscriptions().size() <= 100,
+            () -> assertTrue(jsonInput.subscriptions().size() <= 100,
                 "The number of subscriptions in the input is too high for a test scenario")
         );
 
         // Ensure we don't have any system names or they match the "fake" pattern
-        jsonInput.getSystems().stream()
-            .map(JsonSystem::getName)
+        jsonInput.systems().stream()
+            .map(JsonSystem::name)
             .filter(Objects::nonNull)
             .forEach(systemName -> assertTrue(systemName.matches("sys-(\\d){3}\\.test\\.local"),
                 "System name is not null and does not match the expected pattern: " + systemName));
 
         // Same for virtualization group names, if any
-        jsonInput.getVirtualizationGroups().stream()
-            .map(JsonVirtualizationGroup::getName)
+        jsonInput.virtualizationGroups().stream()
+            .map(JsonVirtualizationGroup::name)
             .filter(Objects::nonNull)
             .forEach(groupName -> assertTrue(groupName.matches("sys-(\\d){3}\\.test\\.local"),
                 "Virtualization group name is not null and does not match the expected pattern: " + groupName));
 
-        jsonInput.getSubscriptions().forEach(subscription -> assertCorrect(subscription));
+        jsonInput.subscriptions().forEach(subscription -> assertCorrect(subscription));
 
-        jsonInput.getPinnedMatches().forEach(match -> {
-            assertSubscriptionIdInRange(match.getSubscriptionId());
+        jsonInput.pinnedMatches().forEach(match -> {
+            assertSubscriptionIdInRange(match.subscriptionId());
         });
     }
 
@@ -81,26 +81,26 @@ public class ScenarioValidator {
         assertNotNull(jsonOutput, "The JSON output for the scenario cannot be null");
 
         assertAll("Missing required data in the output",
-            () -> assertNotNull(jsonOutput.getSubscriptions(), "subscriptions must not be null"),
-            () -> assertNotNull(jsonOutput.getMatches(), "matches must not be null"),
-            () -> assertNotNull(jsonOutput.getSubscriptionPolicies(), "subscription policies must not be null"),
-            () -> assertNotNull(jsonOutput.getMessages(), "messages must not be null")
+            () -> assertNotNull(jsonOutput.subscriptions(), "subscriptions must not be null"),
+            () -> assertNotNull(jsonOutput.matches(), "matches must not be null"),
+            () -> assertNotNull(jsonOutput.subscriptionPolicies(), "subscription policies must not be null"),
+            () -> assertNotNull(jsonOutput.messages(), "messages must not be null")
         );
 
-        jsonOutput.getSubscriptions().forEach(subscription -> assertCorrect(subscription));
-        jsonOutput.getSubscriptionPolicies().forEach((subscriptionId, policy) -> {
+        jsonOutput.subscriptions().forEach(subscription -> assertCorrect(subscription));
+        jsonOutput.subscriptionPolicies().forEach((subscriptionId, policy) -> {
             assertSubscriptionIdInRange(subscriptionId);
         });
 
-        jsonOutput.getMatches().forEach(match -> {
-            assertSubscriptionIdInRange(match.getSubscriptionId());
+        jsonOutput.matches().forEach(match -> {
+            assertSubscriptionIdInRange(match.subscriptionId());
         });
     }
 
     private static void assertCorrect(JsonSubscription subscription) throws MultipleFailuresError {
         assertAll(
-            () -> assertSubscriptionIdInRange(subscription.getId()),
-            () -> assertTestUsername(subscription.getSccUsername())
+            () -> assertSubscriptionIdInRange(subscription.id()),
+            () -> assertTestUsername(subscription.sccUsername())
         );
     }
 

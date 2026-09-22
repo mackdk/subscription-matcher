@@ -150,10 +150,10 @@ public class OutputWriter {
         // convert from match cents to count
         Map<Long, Integer> matchedCounts = FactConverter.getMatches(assignment)
             .collect(Collectors.groupingBy(
-                JsonMatch::getSubscriptionId,
+                JsonMatch::subscriptionId,
                 Collectors.collectingAndThen(
                     // Start at 0, map each match to its cents, and sum using addExact
-                    Collectors.reducing(0, JsonMatch::getCents, Math::addExact),
+                    Collectors.reducing(0, JsonMatch::cents, Math::addExact),
                     // We want to count a subscription as used even if only a part of it is used.
                     // So we round up the cents to the next full subscription.
                     // see http://www.cs.nott.ac.uk/~psarb2/G51MPC/slides/NumberLogic.pdf
@@ -207,7 +207,7 @@ public class OutputWriter {
         // prepare map from (system id, product id) to Match object
         Map<Pair<Long, Long>, JsonMatch> matchMap = new HashMap<>();
         FactConverter.getMatches(assignment)
-            .forEach(match -> matchMap.put(Pair.of(match.getSystemId(), match.getProductId()), match));
+            .forEach(match -> matchMap.put(Pair.of(match.systemId(), match.productId()), match));
 
         // prepare the format
         CSVFormat csvFormat = baseFormat.builder()

@@ -100,11 +100,11 @@ class MatcherScenariosTest {
         JsonOutput expectedOutput = getJsonOutput(scenarioNumber);
 
         assertAll("Check JSON output",
-            () -> assertJsonEquals(expectedOutput.getTimestamp(), actualOutput.getTimestamp(), "Timestamp JSON does not match"),
-            () -> assertJsonEquals(expectedOutput.getMatches(), actualOutput.getMatches(), "Matches JSON does not match"),
-            () -> assertJsonEquals(expectedOutput.getSubscriptionPolicies(), actualOutput.getSubscriptionPolicies(), "Subscription Policies JSON does not match"),
-            () -> assertJsonEquals(expectedOutput.getMessages(), actualOutput.getMessages(), "Messages JSON does not match"),
-            () -> assertJsonEquals(expectedOutput.getSubscriptions(), actualOutput.getSubscriptions(), "Subscriptions JSON does not match")
+            () -> assertJsonEquals(expectedOutput.timestamp(), actualOutput.timestamp(), "Timestamp JSON does not match"),
+            () -> assertJsonEquals(expectedOutput.matches(), actualOutput.matches(), "Matches JSON does not match"),
+            () -> assertJsonEquals(expectedOutput.subscriptionPolicies(), actualOutput.subscriptionPolicies(), "Subscription Policies JSON does not match"),
+            () -> assertJsonEquals(expectedOutput.messages(), actualOutput.messages(), "Messages JSON does not match"),
+            () -> assertJsonEquals(expectedOutput.subscriptions(), actualOutput.subscriptions(), "Subscriptions JSON does not match")
         );
 
         // Check all the CSV files

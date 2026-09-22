@@ -22,8 +22,6 @@ import com.suse.matcher.json.JsonSystem;
 import com.suse.matcher.json.JsonVirtualizationGroup;
 import com.suse.matcher.solver.Assignment;
 
-import org.apache.commons.lang3.builder.CompareToBuilder;
-
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
@@ -56,52 +54,52 @@ public class FactConverter {
     public static Collection<Object> convertToFacts(JsonInput input) {
         Collection<Object> result = new LinkedList<>();
 
-        result.add(new Timestamp(input.getTimestamp()));
+        result.add(new Timestamp(input.timestamp()));
 
-        for (JsonSystem system : input.getSystems()) {
-            result.add(new System(system.getId(), system.getName(), system.getCpus(), system.getPhysical()));
-            for (Long guestId : system.getVirtualSystemIds()) {
-                result.add(new HostGuest(system.getId(), guestId));
+        for (JsonSystem system : input.systems()) {
+            result.add(new System(system.id(), system.name(), system.cpus(), system.physical()));
+            for (Long guestId : system.virtualSystemIds()) {
+                result.add(new HostGuest(system.id(), guestId));
             }
-            for (Long productId : system.getProductIds()) {
-                result.add(new InstalledProduct(system.getId(), productId));
+            for (Long productId : system.productIds()) {
+                result.add(new InstalledProduct(system.id(), productId));
             }
         }
 
-        for (JsonVirtualizationGroup group : input.getVirtualizationGroups()) {
-            for (Long guestId : group.getVirtualGuestIds()) {
+        for (JsonVirtualizationGroup group : input.virtualizationGroups()) {
+            for (Long guestId : group.virtualGuestIds()) {
                 result.add(new VirtualizationGroupMember(
-                        Drools.generateId(group.getType(), group.getId()),
+                        Drools.generateId(group.type(), group.id()),
                         guestId));
             }
         }
 
-        for (JsonProduct product : input.getProducts()) {
+        for (JsonProduct product : input.products()) {
             result.add(new Product(
-                    product.getId(),
-                    product.getName(),
-                    product.getProductClass(),
-                    product.getFree(),
-                    product.getBase()));
+                    product.id(),
+                    product.name(),
+                    product.productClass(),
+                    product.free(),
+                    product.base()));
         }
 
-        for (JsonSubscription subscription : input.getSubscriptions()) {
+        for (JsonSubscription subscription : input.subscriptions()) {
             result.add(new Subscription(
-                    subscription.getId(),
-                    subscription.getPartNumber(),
-                    subscription.getName(),
-                    subscription.getQuantity(),
-                    subscription.getStartDate(),
-                    subscription.getEndDate(),
-                    subscription.getSccUsername()
+                    subscription.id(),
+                    subscription.partNumber(),
+                    subscription.name(),
+                    subscription.quantity(),
+                    subscription.startDate(),
+                    subscription.endDate(),
+                    subscription.sccUsername()
             ));
-            for (Long productId : subscription.getProductIds()) {
-                result.add(new SubscriptionProduct(subscription.getId(), productId));
+            for (Long productId : subscription.productIds()) {
+                result.add(new SubscriptionProduct(subscription.id(), productId));
             }
         }
 
-        for (JsonMatch match : input.getPinnedMatches()) {
-            result.add(new PinnedMatch(match.getSystemId(), match.getSubscriptionId()));
+        for (JsonMatch match : input.pinnedMatches()) {
+            result.add(new PinnedMatch(match.systemId(), match.subscriptionId()));
         }
 
         return result;
@@ -138,7 +136,7 @@ public class FactConverter {
                         throwingMerger(),
                         LinkedHashMap::new));
 
-        return new JsonOutput(timestamp, matches, messages, subscriptionPolicies, getSubscriptions(assignment));
+        return new JsonOutput(timestamp, matches, subscriptionPolicies, getSubscriptions(assignment), messages);
     }
 
     private static BinaryOperator<String> throwingMerger() {
@@ -182,13 +180,7 @@ public class FactConverter {
                 m.productId,
                 centGroupsCents.get(m.getCentGroupId()) / centGroupMatchesCount.getOrDefault(m.getCentGroupId(), 1)
             ))
-            .sorted((a, b) -> new CompareToBuilder()
-                .append(a.getSystemId(), b.getSystemId())
-                .append(a.getProductId(), b.getProductId())
-                .append(a.getSubscriptionId(), b.getSubscriptionId())
-                .append(a.getCents(), b.getCents())
-                .toComparison()
-            );
+            .sorted();
     }
 
     /**

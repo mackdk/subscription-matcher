@@ -2,6 +2,7 @@ package com.suse.matcher;
 
 import com.suse.matcher.json.JsonInput;
 import com.suse.matcher.json.JsonOutput;
+import com.suse.matcher.json.RecordTypeAdapterFactory;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -21,6 +22,7 @@ public class JsonIO {
     /** Default constructor. */
     public JsonIO() {
         gson = new GsonBuilder()
+            .registerTypeAdapterFactory(new RecordTypeAdapterFactory())
             .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX")
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .setPrettyPrinting()

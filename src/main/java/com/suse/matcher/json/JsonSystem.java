@@ -4,175 +4,22 @@ import java.util.Set;
 
 /**
  * JSON representation of a system.
+ * 
+ * @param id
+ * @param name profile name
+ * @param cpus the number of CPUs
+ * @param physical {@code true} if this system is made of metal
+ * @param virtualHost {@code true} if this system is a virtual host
+ * @param virtualSystemIds the id of the virtual machines hosted by this system
+ * @param productIds the id of the products installed on this system
  */
-public class JsonSystem {
-
-    /** The id. */
-    private Long id;
-
-    /** The profile name. */
-    private String name;
-
-    /** The populated CPU socket count. */
-    private Integer cpus;
-
-    /** True if this system is made of metal. */
-    private Boolean physical;
-
-    /** True if this system is a virtual host. */
-    private Boolean virtualHost;
-
-    /** Virtual machine ids. */
-    private Set<Long> virtualSystemIds;
-
-    /** Installed product ids. */
-    private Set<Long> productIds;
-
-    /**
-     * Standard constructor.
-     *
-     * @param idIn the id
-     * @param nameIn the name
-     * @param cpusIn the cpus
-     * @param physicalIn the physical
-     * @param virtualHostIn true if this is a virtual host
-     * @param virtualSystemIdsIn the virtual system ids
-     * @param productIdsIn the product ids
-     */
-    public JsonSystem(Long idIn, String nameIn, Integer cpusIn, Boolean physicalIn,
-            Boolean virtualHostIn, Set<Long> virtualSystemIdsIn, Set<Long> productIdsIn) {
-        id = idIn;
-        name = nameIn;
-        cpus = cpusIn;
-        physical = physicalIn;
-        virtualHost = virtualHostIn;
-        virtualSystemIds = virtualSystemIdsIn;
-        productIds = productIdsIn;
-    }
-
-    /**
-     * Gets the id.
-     *
-     * @return the id
-     */
-    public Long getId() {
-        return id;
-    }
-
-    /**
-     * Sets the id.
-     *
-     * @param idIn the new id
-     */
-    public void setId(Long idIn) {
-        id = idIn;
-    }
-
-    /**
-     * Gets the profile name.
-     *
-     * @return the profile name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Sets the profile name.
-     *
-     * @param nameIn the new profile name
-     */
-    public void setName(String nameIn) {
-        name = nameIn;
-    }
-
-    /**
-     * Gets the populated CPU socket count.
-     *
-     * @return the populated CPU socket count
-     */
-    public Integer getCpus() {
-        return cpus;
-    }
-
-    /**
-     * Sets the populated CPU socket count.
-     *
-     * @param cpusIn the new populated CPU socket count
-     */
-    public void setCpus(Integer cpusIn) {
-        cpus = cpusIn;
-    }
-
-    /**
-     * Returns true if this system is made of metal.
-     *
-     * @return true if this system is made of metal
-     */
-    public Boolean getPhysical() {
-        return physical;
-    }
-
-    /**
-     * Sets the physicality of this system.
-     *
-     * @param physicalIn true if this system is made of metal
-     */
-    public void setPhysical(Boolean physicalIn) {
-        physical = physicalIn;
-    }
-
-    /**
-     * Returns true if this system is a virtual host.
-     *
-     * @return the true if this system is a virtual host
-     */
-    public Boolean getVirtualHost() {
-        return virtualHost;
-    }
-
-    /**
-     * Set to true if this system is a virtual host.
-     *
-     * @param virtualHostIn true if this system is a virtual host
-     */
-    public void setVirtualHost(Boolean virtualHostIn) {
-        virtualHost = virtualHostIn;
-    }
-
-    /**
-     * Gets the virtual machine ids.
-     *
-     * @return the virtual machine ids
-     */
-    public Set<Long> getVirtualSystemIds() {
-        return virtualSystemIds;
-    }
-
-    /**
-     * Sets the virtual machine ids.
-     *
-     * @param virtualSystemIdsIn the new virtual machine ids
-     */
-    public void setVirtualSystemIds(Set<Long> virtualSystemIdsIn) {
-        virtualSystemIds = virtualSystemIdsIn;
-    }
-
-    /**
-     * Gets the installed product ids.
-     *
-     * @return the installed product ids
-     */
-    public Set<Long> getProductIds() {
-        return productIds;
-    }
-
-    /**
-     * Sets the installed product ids.
-     *
-     * @param productIdsIn the new installed product ids
-     */
-    public void setProductIds(Set<Long> productIdsIn) {
-        productIds = productIdsIn;
-    }
+public record JsonSystem(
+    Long id,
+    String name,
+    Integer cpus,
+    Boolean physical,
+    Boolean virtualHost,
+    Set<Long> virtualSystemIds,
+    Set<Long> productIds
+) {
 }

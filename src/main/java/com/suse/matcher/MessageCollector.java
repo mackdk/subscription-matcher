@@ -29,7 +29,7 @@ public class MessageCollector {
     public static void addMessages(Assignment assignment) {
         // filter out interesting collections from facts
         Set<Pair<Long, Long>> confirmedMatchFacts = FactConverter.getMatches(assignment)
-            .map(m -> Pair.of(m.getSubscriptionId(), m.getSystemId()))
+            .map(m -> Pair.of(m.subscriptionId(), m.systemId()))
             .collect(Collectors.toSet());
 
         // add messages about unsatisfied pins

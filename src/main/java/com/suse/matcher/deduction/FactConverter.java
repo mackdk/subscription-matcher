@@ -22,8 +22,6 @@ import com.suse.matcher.io.json.JsonSystem;
 import com.suse.matcher.io.json.JsonVirtualizationGroup;
 import com.suse.matcher.optimization.Assignment;
 
-import org.apache.commons.lang3.BooleanUtils;
-
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
@@ -81,8 +79,9 @@ public class FactConverter {
                     product.id(),
                     product.name(),
                     product.productClass(),
-                    BooleanUtils.isTrue(product.free()),
-                    BooleanUtils.isTrue(product.base())));
+                    Boolean.TRUE.equals(product.free()),
+                    Boolean.TRUE.equals(product.base())
+                ));
         }
 
         for (JsonSubscription subscription : input.subscriptions()) {

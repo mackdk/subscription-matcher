@@ -1,9 +1,9 @@
 package com.suse.matcher.deduction.facts;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.kie.api.definition.type.PropertyReactive;
+
+import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * Marker class expressing that a group of matches was generated from Inherited virtualization
@@ -33,33 +33,27 @@ public class GroupInInheritedVirtualization {
     }
 
     @Override
+    public int hashCode() {
+        return Objects.hash(groupId);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
 
-        if (!(o instanceof GroupInInheritedVirtualization)) {
+        if (!(o instanceof GroupInInheritedVirtualization other)) {
             return false;
         }
 
-        GroupInInheritedVirtualization that = (GroupInInheritedVirtualization) o;
-
-        return new EqualsBuilder()
-            .append(groupId, that.groupId)
-            .isEquals();
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder(17, 37)
-            .append(groupId)
-            .toHashCode();
+        return Objects.equals(groupId, other.getGroupId());
     }
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
-            .append("groupId", groupId)
+        return new StringJoiner(", ", GroupInInheritedVirtualization.class.getSimpleName() + "[", "]")
+            .add("groupId=" + groupId)
             .toString();
     }
 }

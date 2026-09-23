@@ -3,13 +3,13 @@ package com.suse.matcher.optimization.move;
 import com.suse.matcher.optimization.Assignment;
 import com.suse.matcher.optimization.Match;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.optaplanner.core.api.score.director.ScoreDirector;
 import org.optaplanner.core.impl.heuristic.move.AbstractMove;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 /**
@@ -36,9 +36,6 @@ public class MatchMove extends AbstractMove<Assignment> {
         confirmedFlags = confirmedFlagsIn;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void doMoveOnGenuineVariables(ScoreDirector<Assignment> director) {
         for (int i = 0; i < matches.size(); i++) {
@@ -49,18 +46,12 @@ public class MatchMove extends AbstractMove<Assignment> {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isMoveDoable(ScoreDirector<Assignment> director) {
         // MatchMoveIterator constructs doable MatchMoves only
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AbstractMove<Assignment> createUndoMove(ScoreDirector<Assignment> director) {
         List<Boolean> newConfirmedFlags = matches.stream()
@@ -70,59 +61,41 @@ public class MatchMove extends AbstractMove<Assignment> {
         return new MatchMove(matches, newConfirmedFlags);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Collection<Match> getPlanningEntities() {
         return matches;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Collection<Boolean> getPlanningValues() {
         return confirmedFlags;
     }
 
-    /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-            // because of how MatchMoveIterator works, we only need to check
-            // Match objects - confirmedFlags is computed from them
-            .append(matches)
-            .toHashCode();
+        // MatchMoveIterator derives confirmedFlags from the Match objects.
+        return Objects.hash(matches);
     }
 
-    /** {@inheritDoc} */
     @Override
-    public boolean equals(Object objIn) {
-        if (!(objIn instanceof MatchMove)) {
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof MatchMove other)) {
             return false;
         }
-        MatchMove other = (MatchMove) objIn;
-        return new EqualsBuilder()
-            // see hashCode()
-            .append(matches, other.matches)
-            .isEquals();
+
+        // MatchMoveIterator derives confirmedFlags from the Match objects.
+        return Objects.equals(matches, other.getPlanningEntities());
     }
 
-    /** {@inheritDoc} */
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("MatchMove[");
+        StringJoiner joiner = new StringJoiner(", ", MatchMove.class.getSimpleName() + "[", "]");
         for (int i = 0; i < matches.size(); i++) {
-            builder.append(matches.get(i));
-            builder.append("->");
-            builder.append(confirmedFlags.get(i));
-            if (i < matches.size() - 1) {
-                builder.append(",");
-            }
+            joiner.add(matches.get(i) + " -> " + confirmedFlags.get(i));
         }
-        builder.append("]");
-        return builder.toString();
+        return joiner.toString();
     }
 }

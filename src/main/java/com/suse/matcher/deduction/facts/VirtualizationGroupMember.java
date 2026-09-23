@@ -1,9 +1,7 @@
 package com.suse.matcher.deduction.facts;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
+import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * A relationship between a Virtualization Group and one of its Virtual Guest members.
@@ -48,34 +46,28 @@ public class VirtualizationGroupMember {
         return guestId;
     }
 
-    /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-                .append(virtualizationGroupId)
-                .append(guestId)
-                .toHashCode();
+        return Objects.hash(virtualizationGroupId, guestId);
     }
 
-    /** {@inheritDoc} */
     @Override
-    public boolean equals(Object objIn) {
-        if (!(objIn instanceof VirtualizationGroupMember)) {
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof VirtualizationGroupMember other)) {
             return false;
         }
-        VirtualizationGroupMember other = (VirtualizationGroupMember) objIn;
-        return new EqualsBuilder()
-                .append(virtualizationGroupId, other.virtualizationGroupId)
-                .append(guestId, other.guestId)
-                .isEquals();
+        return Objects.equals(virtualizationGroupId, other.getVirtualizationGroupId())
+                && Objects.equals(guestId, other.getGuestId());
     }
 
-    /** {@inheritDoc} */
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append("virtualizationGroupId", virtualizationGroupId)
-                .append("guestId", guestId)
+        return new StringJoiner(", ", VirtualizationGroupMember.class.getSimpleName() + "[", "]")
+                .add("virtualizationGroupId=" + virtualizationGroupId)
+                .add("guestId=" + guestId)
                 .toString();
     }
 }

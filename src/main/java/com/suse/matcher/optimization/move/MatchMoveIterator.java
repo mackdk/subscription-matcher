@@ -45,13 +45,11 @@ public class MatchMoveIterator implements Iterator<MatchMove> {
             .collect(Collectors.toMap(match -> match.getId(), match -> match));
     }
 
-    /** {@inheritDoc} */
     @Override
     public boolean hasNext() {
         return iterator.hasNext();
     }
 
-    /** {@inheritDoc} */
     @Override
     public MatchMove next() {
         // prepare MatchMove's lists

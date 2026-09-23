@@ -1,20 +1,24 @@
 package com.suse.matcher.deduction.facts;
 
-import org.apache.commons.lang3.builder.CompareToBuilder;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * Represents a message to be presented to the user, as a secondary informative output (errors, warnings, etc.)
  */
 public class Message implements Comparable<Message> {
+
+    private static final Comparator<Message> DEFAULT_COMPARATOR = Comparator.comparing(Message::getType)
+            .thenComparing(Message::getData, (o1In, o2In) -> {
+                Comparator<String> nullSafeComparator = Comparator.nullsFirst(Comparator.naturalOrder());
+                return o1In.keySet().stream().sorted()
+                    .map(key -> nullSafeComparator.compare(o1In.get(key), o2In.get(key)))
+                    .filter(result -> result != 0)
+                    .findFirst()
+                    .orElse(0);
+            });
 
     /**
      * Represents the severity level of this message.
@@ -74,51 +78,33 @@ public class Message implements Comparable<Message> {
         return data;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public int compareTo(Message oIn) {
-        return new CompareToBuilder()
-            .append(type, oIn.type)
-            .append(data, oIn.data, (Comparator<Map<String, String>>) (o1In, o2In) -> {
-                List<String> keys = o1In.keySet().stream().sorted().collect(Collectors.toList());
-                for (String key : keys) {
-                    int comparison = o1In.get(key).compareTo(o2In.get(key));
-                    if (comparison != 0) {
-                        return comparison;
-                    }
-                }
-                return 0;
-            })
-            .toComparison();
-    }
-
-    /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-            .append(type)
-            .toHashCode();
+        return Objects.hash(type);
     }
 
-    /** {@inheritDoc} */
     @Override
-    public boolean equals(Object objIn) {
-        if (!(objIn instanceof Message)) {
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Message other)) {
             return false;
         }
-        Message other = (Message) objIn;
-        return new EqualsBuilder()
-            .append(type, other.type)
-            .append(data, other.data)
-            .isEquals();
+        return Objects.equals(type, other.getType())
+                && Objects.equals(data, other.getData());
     }
 
-    /** {@inheritDoc} */
+    @Override
+    public int compareTo(Message other) {
+        return DEFAULT_COMPARATOR.compare(this, other);
+    }
+
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-            .append("type", type)
-            .append("data", data)
-            .toString();
+        return new StringJoiner(", ", Message.class.getSimpleName() + "[", "]")
+                .add("type=" + type)
+                .add("data=" + data)
+                .toString();
     }
 }

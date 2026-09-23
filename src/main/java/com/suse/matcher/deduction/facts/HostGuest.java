@@ -1,10 +1,9 @@
 package com.suse.matcher.deduction.facts;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.kie.api.definition.type.PropertyReactive;
+
+import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * Represents a virtual host-to-guest relationship.
@@ -47,34 +46,28 @@ public class HostGuest {
         return guestId;
     }
 
-    /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-            .append(hostId)
-            .append(guestId)
-            .toHashCode();
+        return Objects.hash(hostId, guestId);
     }
 
-    /** {@inheritDoc} */
     @Override
-    public boolean equals(Object objIn) {
-        if (!(objIn instanceof HostGuest)) {
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof HostGuest other)) {
             return false;
         }
-        HostGuest other = (HostGuest) objIn;
-        return new EqualsBuilder()
-            .append(hostId, other.hostId)
-            .append(guestId, other.guestId)
-            .isEquals();
+        return Objects.equals(hostId, other.getHostId())
+                && Objects.equals(guestId, other.getGuestId());
     }
 
-    /** {@inheritDoc} */
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-            .append("hostId", hostId)
-            .append("guestId", guestId)
-            .toString();
+        return new StringJoiner(", ", HostGuest.class.getSimpleName() + "[", "]")
+                .add("hostId=" + hostId)
+                .add("guestId=" + guestId)
+                .toString();
     }
 }

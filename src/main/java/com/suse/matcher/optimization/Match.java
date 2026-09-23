@@ -5,14 +5,12 @@ import com.suse.matcher.deduction.facts.Product;
 import com.suse.matcher.deduction.facts.Subscription;
 import com.suse.matcher.deduction.facts.System;
 
-import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.builder.CompareToBuilder;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.optaplanner.core.api.domain.entity.PlanningEntity;
 import org.optaplanner.core.api.domain.variable.PlanningVariable;
+
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * Represents a set of {@link PotentialMatch}es: {@link Subscription}-{@link System}-{@link Product}
@@ -25,6 +23,8 @@ import org.optaplanner.core.api.domain.variable.PlanningVariable;
  */
 @PlanningEntity
 public class Match implements Comparable<Match> {
+
+    private static final Comparator<Match> DEFAULT_COMPARATOR = Comparator.comparing(Match::getId);
 
     /** A unique identifier for this Match. */
     private int id;
@@ -68,7 +68,7 @@ public class Match implements Comparable<Match> {
      * @return true if the match is confirmed
      */
     public boolean isConfirmed() {
-        return BooleanUtils.isTrue(confirmed);
+        return Boolean.TRUE.equals(confirmed);
     }
 
     /**
@@ -80,42 +80,34 @@ public class Match implements Comparable<Match> {
         confirmed = confirmedIn;
     }
 
-    /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-            .append(id)
-            // confirmed is a planning variable, so it must not be in hashCode
-            .toHashCode();
+        // confirmed is a planning variable, so it must not be in hashCode
+        return Objects.hash(id);
     }
 
-    /** {@inheritDoc} */
     @Override
-    public boolean equals(Object objIn) {
-        if (!(objIn instanceof Match)) {
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Match other)) {
             return false;
         }
-        Match other = (Match) objIn;
-        return new EqualsBuilder()
-            .append(id, other.id)
-            // confirmed is a planning variable, so it must not be in equals
-            .isEquals();
+        // confirmed is a planning variable, so it must not be in equals
+        return Objects.equals(id, other.getId());
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-            .append("id", id)
-            .append("confirmed", confirmed)
-            .toString();
-    }
-
-    /** {@inheritDoc} */
     @Override
     public int compareTo(Match other) {
-        return new CompareToBuilder()
-            .append(id, other.id)
-            .toComparison();
+        return DEFAULT_COMPARATOR.compare(this, other);
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", Match.class.getSimpleName() + "[", "]")
+                .add("id=" + id)
+                .add("confirmed=" + confirmed)
+                .toString();
     }
 }

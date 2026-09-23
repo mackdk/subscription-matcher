@@ -10,20 +10,17 @@ import java.util.Random;
 
 public class MatchSwapMoveIteratorFactory implements MoveIteratorFactory<Assignment, MatchMove> {
 
-    /** {@inheritDoc} */
     @Override
     public long getSize(ScoreDirector<Assignment> director) {
         // we generate exactly one move per Match
         return director.getWorkingSolution().getMatches().size();
     }
 
-    /** {@inheritDoc} */
     @Override
     public Iterator<MatchMove> createRandomMoveIterator(ScoreDirector<Assignment> director, Random random) {
         return new MatchSwapMoveIterator(director.getWorkingSolution(), random);
     }
 
-    /** {@inheritDoc} */
     @Override
     public Iterator<MatchMove> createOriginalMoveIterator(ScoreDirector<Assignment> director) {
         throw new UnsupportedOperationException("ORIGINAL selectionOrder is not supported.");

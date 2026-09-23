@@ -1,9 +1,7 @@
 package com.suse.matcher.deduction.facts;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
+import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * Represents mapping of a virtual guest to a penalty group for 1-2 subscriptions.
@@ -43,34 +41,28 @@ public class PenaltyGroup {
         return guestId;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-            .append("id", id)
-            .append("guestId", guestId)
-            .toString();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean equals(Object objIn) {
-        if (!(objIn instanceof PenaltyGroup)) {
-            return false;
-        }
-        PenaltyGroup that = (PenaltyGroup) objIn;
-        return new EqualsBuilder()
-                .append(id, that.id)
-                .append(guestId, that.guestId)
-                .isEquals();
-    }
-
-    /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-                .append(id)
-                .append(guestId)
-                .toHashCode();
+        return Objects.hash(id, guestId);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof PenaltyGroup other)) {
+            return false;
+        }
+        return Objects.equals(id, other.getId())
+                && Objects.equals(guestId, other.getGuestId());
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", PenaltyGroup.class.getSimpleName() + "[", "]")
+                .add("id=" + id)
+                .add("guestId=" + guestId)
+                .toString();
     }
 }

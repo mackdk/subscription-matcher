@@ -1,10 +1,9 @@
 package com.suse.matcher.deduction.facts;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.kie.api.definition.type.PropertyReactive;
+
+import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * Represents a subscription to product relationship.
@@ -47,34 +46,28 @@ public class SubscriptionProduct {
         return productId;
     }
 
-    /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-            .append(subscriptionId)
-            .append(productId)
-            .toHashCode();
+        return Objects.hash(subscriptionId, productId);
     }
 
-    /** {@inheritDoc} */
     @Override
-    public boolean equals(Object objIn) {
-        if (!(objIn instanceof SubscriptionProduct)) {
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof SubscriptionProduct other)) {
             return false;
         }
-        SubscriptionProduct other = (SubscriptionProduct) objIn;
-        return new EqualsBuilder()
-            .append(subscriptionId, other.subscriptionId)
-            .append(productId, other.productId)
-            .isEquals();
+        return Objects.equals(subscriptionId, other.getSubscriptionId())
+                && Objects.equals(productId, other.getProductId());
     }
 
-    /** {@inheritDoc} */
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-            .append("subscriptionId", subscriptionId)
-            .append("productId", productId)
-            .toString();
+        return new StringJoiner(", ", SubscriptionProduct.class.getSimpleName() + "[", "]")
+                .add("subscriptionId=" + subscriptionId)
+                .add("productId=" + productId)
+                .toString();
     }
 }

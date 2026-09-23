@@ -3,8 +3,7 @@ package com.suse.matcher.optimization;
 import com.suse.matcher.deduction.FactConverter;
 import com.suse.matcher.deduction.facts.Message;
 import com.suse.matcher.deduction.facts.PinnedMatch;
-
-import org.apache.commons.lang3.tuple.Pair;
+import com.suse.matcher.util.Pair;
 
 import java.util.List;
 import java.util.Map;
@@ -29,12 +28,12 @@ public class MessageCollector {
     public static void addMessages(Assignment assignment) {
         // filter out interesting collections from facts
         Set<Pair<Long, Long>> confirmedMatchFacts = FactConverter.getMatches(assignment)
-            .map(m -> Pair.of(m.subscriptionId(), m.systemId()))
+            .map(m -> new Pair<>(m.subscriptionId(), m.systemId()))
             .collect(Collectors.toSet());
 
         // add messages about unsatisfied pins
         List<Message> messages = assignment.getProblemFactStream(PinnedMatch.class)
-            .filter(pin -> !confirmedMatchFacts.contains(Pair.of(pin.getSubscriptionId(), pin.getSystemId())))
+            .filter(pin -> !confirmedMatchFacts.contains(new Pair<>(pin.getSubscriptionId(), pin.getSystemId())))
             .map(unmatchedPin -> {
                 return new Message(Message.Level.INFO, "unsatisfied_pinned_match", new TreeMap<>(Map.of(
                     "system_id", String.valueOf(unmatchedPin.getSystemId()),

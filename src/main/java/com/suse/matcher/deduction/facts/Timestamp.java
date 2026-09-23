@@ -1,12 +1,10 @@
 package com.suse.matcher.deduction.facts;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.kie.api.definition.type.PropertyReactive;
 
 import java.util.Date;
+import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * Encapsulates the date and time when the matching is performed. This wrapper
@@ -37,31 +35,26 @@ public class Timestamp {
         return timestamp;
     }
 
-    /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-            .append(timestamp)
-            .toHashCode();
+        return Objects.hash(timestamp);
     }
 
-    /** {@inheritDoc} */
     @Override
-    public boolean equals(Object objIn) {
-        if (!(objIn instanceof Timestamp)) {
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Timestamp other)) {
             return false;
         }
-        Timestamp other = (Timestamp) objIn;
-        return new EqualsBuilder()
-            .append(timestamp, other.timestamp)
-            .isEquals();
+        return Objects.equals(timestamp, other.getTimestamp());
     }
 
-    /** {@inheritDoc} */
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-        .append("timestamp", timestamp)
-        .toString();
+        return new StringJoiner(", ", Timestamp.class.getSimpleName() + "[", "]")
+                .add("timestamp=" + timestamp)
+                .toString();
     }
 }

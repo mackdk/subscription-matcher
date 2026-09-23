@@ -1,9 +1,7 @@
 package com.suse.matcher.deduction.facts;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
+import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * Represents a match that the customer would like to see in the solution.
@@ -51,34 +49,28 @@ public class PinnedMatch {
         return subscriptionId;
     }
 
-    /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-            .append(systemId)
-            .append(subscriptionId)
-            .toHashCode();
+        return Objects.hash(systemId, subscriptionId);
     }
 
-    /** {@inheritDoc} */
     @Override
-    public boolean equals(Object objIn) {
-        if (!(objIn instanceof PinnedMatch)) {
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof PinnedMatch other)) {
             return false;
         }
-        PinnedMatch other = (PinnedMatch) objIn;
-        return new EqualsBuilder()
-            .append(systemId, other.systemId)
-            .append(subscriptionId, other.subscriptionId)
-            .isEquals();
+        return Objects.equals(systemId, other.getSystemId())
+                && Objects.equals(subscriptionId, other.getSubscriptionId());
     }
 
-    /** {@inheritDoc} */
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-            .append("systemId", systemId)
-            .append("subscriptionId", subscriptionId)
-            .toString();
+        return new StringJoiner(", ", PinnedMatch.class.getSimpleName() + "[", "]")
+                .add("systemId=" + systemId)
+                .add("subscriptionId=" + subscriptionId)
+                .toString();
     }
 }

@@ -1,11 +1,10 @@
 package com.suse.matcher.deduction.facts;
 
-import org.apache.commons.lang3.builder.CompareToBuilder;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.kie.api.definition.type.PropertyReactive;
+
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * A PotentialMatch is a potential application of a {@link Subscription} to a {@link System}
@@ -19,6 +18,12 @@ import org.kie.api.definition.type.PropertyReactive;
  */
 @PropertyReactive
 public class PotentialMatch implements Comparable<PotentialMatch> {
+
+    private static final Comparator<PotentialMatch> DEFAULT_COMPARATOR = Comparator.comparing(PotentialMatch::getSystemId)
+            .thenComparing(PotentialMatch::getProductId)
+            .thenComparing(PotentialMatch::getSubscriptionId)
+            .thenComparing(PotentialMatch::getCentGroupId)
+            .thenComparing(PotentialMatch::getGroupId);
 
     /** The system id. */
     private final long systemId;
@@ -106,55 +111,39 @@ public class PotentialMatch implements Comparable<PotentialMatch> {
         return groupId;
     }
 
-    /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-            .append(systemId)
-            .append(productId)
-            .append(subscriptionId)
-            .append(centGroupId)
-            .append(groupId)
-            .toHashCode();
+        return Objects.hash(systemId, productId, subscriptionId, centGroupId, groupId);
     }
 
-    /** {@inheritDoc} */
     @Override
-    public boolean equals(Object objIn) {
-        if (!(objIn instanceof PotentialMatch)) {
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof PotentialMatch other)) {
             return false;
         }
-        PotentialMatch other = (PotentialMatch) objIn;
-        return new EqualsBuilder()
-            .append(systemId, other.systemId)
-            .append(productId, other.productId)
-            .append(subscriptionId, other.subscriptionId)
-            .append(centGroupId, other.centGroupId)
-            .append(groupId, other.groupId)
-            .isEquals();
+        return Objects.equals(systemId, other.getSystemId())
+                && Objects.equals(productId, other.getProductId())
+                && Objects.equals(subscriptionId, other.getSubscriptionId())
+                && Objects.equals(centGroupId, other.getCentGroupId())
+                && Objects.equals(groupId, other.getGroupId());
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-            .append("systemId", systemId)
-            .append("productId", productId)
-            .append("subscriptionId", subscriptionId)
-            .append("centGroupId", centGroupId)
-            .append("groupId", groupId)
-            .toString();
-    }
-
-    /** {@inheritDoc} */
     @Override
     public int compareTo(PotentialMatch other) {
-        return new CompareToBuilder()
-            .append(systemId, other.systemId)
-            .append(productId, other.productId)
-            .append(subscriptionId, other.subscriptionId)
-            .append(centGroupId, other.centGroupId)
-            .append(groupId, other.groupId)
-            .toComparison();
+        return DEFAULT_COMPARATOR.compare(this, other);
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", PotentialMatch.class.getSimpleName() + "[", "]")
+                .add("systemId=" + systemId)
+                .add("productId=" + productId)
+                .add("subscriptionId=" + subscriptionId)
+                .add("centGroupId=" + centGroupId)
+                .add("groupId=" + groupId)
+                .toString();
     }
 }

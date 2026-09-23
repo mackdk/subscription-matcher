@@ -1,10 +1,9 @@
 package com.suse.matcher.optimization.facts;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.kie.api.definition.type.PropertyReactive;
+
+import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * When calculating the total amount of subscription cents used, there
@@ -63,37 +62,30 @@ public class Penalty {
         return cents;
     }
 
-    /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-            .append(subscriptionId)
-            .append(penaltyGroupId)
-            .append(cents)
-            .toHashCode();
+        return Objects.hash(subscriptionId, penaltyGroupId, cents);
     }
 
-    /** {@inheritDoc} */
     @Override
-    public boolean equals(Object objIn) {
-        if (!(objIn instanceof Penalty)) {
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Penalty other)) {
             return false;
         }
-        Penalty other = (Penalty) objIn;
-        return new EqualsBuilder()
-            .append(subscriptionId, other.subscriptionId)
-            .append(penaltyGroupId, other.penaltyGroupId)
-            .append(cents, other.cents)
-            .isEquals();
+        return Objects.equals(subscriptionId, other.getSubscriptionId())
+                && Objects.equals(penaltyGroupId, other.getPenaltyGroupId())
+                && Objects.equals(cents, other.getCents());
     }
 
-    /** {@inheritDoc} */
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-        .append("subscriptionId", subscriptionId)
-        .append("penaltyGroupId", penaltyGroupId)
-        .append("penaltyCents", cents)
-        .toString();
+        return new StringJoiner(", ", Penalty.class.getSimpleName() + "[", "]")
+                .add("subscriptionId=" + subscriptionId)
+                .add("penaltyGroupId=" + penaltyGroupId)
+                .add("penaltyCents=" + cents)
+                .toString();
     }
 }

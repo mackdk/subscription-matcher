@@ -1,10 +1,9 @@
 package com.suse.matcher.deduction.facts;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.kie.api.definition.type.PropertyReactive;
+
+import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * Cent group - expresses the usage of subscription by a potential match(es)
@@ -44,32 +43,27 @@ public class CentGroup {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-
-        if (o == null || getClass() != o.getClass()) return false;
-
-        CentGroup centGroup = (CentGroup) o;
-
-        return new EqualsBuilder()
-                .append(id, centGroup.id)
-                .append(cents, centGroup.cents)
-                .isEquals();
+    public int hashCode() {
+        return Objects.hash(id, cents);
     }
 
     @Override
-    public int hashCode() {
-        return new HashCodeBuilder(17, 37)
-                .append(id)
-                .append(cents)
-                .toHashCode();
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof CentGroup other)) {
+            return false;
+        }
+        return Objects.equals(id, other.getId())
+                && Objects.equals(cents, other.getCents());
     }
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append("id", id)
-                .append("cents", cents)
+        return new StringJoiner(", ", CentGroup.class.getSimpleName() + "[", "]")
+                .add("id=" + id)
+                .add("cents=" + cents)
                 .toString();
     }
 }

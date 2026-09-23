@@ -1,13 +1,11 @@
 package com.suse.matcher.deduction.facts;
 
-import org.apache.commons.lang3.builder.CompareToBuilder;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.kie.api.definition.type.PropertyReactive;
 
+import java.util.Comparator;
 import java.util.Date;
+import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * An entitlement to use one or more products on one or more
@@ -15,6 +13,9 @@ import java.util.Date;
  */
 @PropertyReactive
 public class Subscription implements Comparable<Subscription> {
+
+    private static final Comparator<Subscription> DEFAULT_COMPARATOR = Comparator.comparing(Subscription::getId);
+
     /**
      * Encodes virtual machine assignment policies for a {@link Subscription}
      */
@@ -65,7 +66,6 @@ public class Subscription implements Comparable<Subscription> {
             return description;
         }
 
-        /** {@inheritDoc} */
         @Override
         public String toString() {
             return description;
@@ -382,41 +382,35 @@ public class Subscription implements Comparable<Subscription> {
         this.ignored = ignoredIn;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public int compareTo(Subscription oIn) {
-        return new CompareToBuilder().append(id, oIn.id).toComparison();
-    }
-
-    /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-            .append(id)
-            .toHashCode();
+        return Objects.hash(id);
     }
 
-    /** {@inheritDoc} */
     @Override
-    public boolean equals(Object objIn) {
-        if (!(objIn instanceof Subscription)) {
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Subscription other)) {
             return false;
         }
-        Subscription other = (Subscription) objIn;
-        return new EqualsBuilder()
-            .append(id, other.id)
-            .isEquals();
+        return Objects.equals(id, other.getId());
     }
 
-    /** {@inheritDoc} */
+    @Override
+    public int compareTo(Subscription other) {
+        return DEFAULT_COMPARATOR.compare(this, other);
+    }
+
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-            .append("id", id)
-            .append("partNumber", partNumber)
-            .append("policy", policy)
-            .append("hardBundleId", hardBundleId)
-            .append("aggregatedSubscriptionId", aggregatedSubscriptionId)
-            .toString();
+        return new StringJoiner(", ", Subscription.class.getSimpleName() + "[", "]")
+                .add("id=" + id)
+                .add("partNumber='" + partNumber +"'")
+                .add("policy=" + policy)
+                .add("hardBundleId=" + hardBundleId)
+                .add("aggregatedSubscriptionId=" + aggregatedSubscriptionId)
+                .toString();
     }
 }

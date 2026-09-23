@@ -1,8 +1,7 @@
 package com.suse.matcher.optimization.facts;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * Representation of a confirmed match in a penalty group.
@@ -54,35 +53,29 @@ public class ConfirmedMatchInPenaltyGroup {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ConfirmedMatchInPenaltyGroup that = (ConfirmedMatchInPenaltyGroup) o;
-
-        return new EqualsBuilder()
-                .append(penaltyGroupId, that.penaltyGroupId)
-                .append(guestId, that.guestId)
-                .append(subscriptionId, that.subscriptionId)
-                .isEquals();
+    public int hashCode() {
+        return Objects.hash(subscriptionId, penaltyGroupId, guestId);
     }
 
     @Override
-    public int hashCode() {
-        return new HashCodeBuilder(17, 37)
-                .append(subscriptionId)
-                .append(penaltyGroupId)
-                .append(guestId)
-                .toHashCode();
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ConfirmedMatchInPenaltyGroup other)) {
+            return false;
+        }
+        return Objects.equals(penaltyGroupId, other.getPenaltyGroupId())
+                && Objects.equals(guestId, other.getGuestId())
+                && Objects.equals(subscriptionId, other.getSubscriptionId());
     }
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
-                .append("subscriptionId", subscriptionId)
-                .append("penaltyGroupId", penaltyGroupId)
-                .append("guestId", guestId)
+        return new StringJoiner(", ", ConfirmedMatchInPenaltyGroup.class.getSimpleName() + "[", "]")
+                .add("subscriptionId=" + subscriptionId)
+                .add("penaltyGroupId=" + penaltyGroupId)
+                .add("guestId=" + guestId)
                 .toString();
     }
 }

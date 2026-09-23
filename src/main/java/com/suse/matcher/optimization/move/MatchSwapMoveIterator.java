@@ -4,8 +4,7 @@ import com.suse.matcher.deduction.facts.PotentialMatch;
 import com.suse.matcher.optimization.Assignment;
 import com.suse.matcher.optimization.Match;
 import com.suse.matcher.util.CollectionUtils;
-
-import org.apache.commons.lang3.tuple.Pair;
+import com.suse.matcher.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -68,19 +67,17 @@ public class MatchSwapMoveIterator implements Iterator<MatchMove> {
         // subscription, such that a confirmed match is on the left and not confirmed match is on the right in the match
         iterator = subscriptionMatches.values()
                                       .stream()
-                                      .map(map -> CollectionUtils.zip(map.get(true), map.get(false), Pair::of))
+                                      .map(map -> CollectionUtils.zip(map.get(true), map.get(false), Pair::new))
                                       .flatMap(Collection::stream)
                                       .collect(CollectionUtils.toShuffledList(randomIn))
                                       .iterator();
     }
 
-    /** {@inheritDoc} */
     @Override
     public boolean hasNext() {
         return iterator.hasNext();
     }
 
-    /** {@inheritDoc} */
     @Override
     public MatchMove next() {
         // prepare MatchMove's lists
@@ -89,8 +86,8 @@ public class MatchSwapMoveIterator implements Iterator<MatchMove> {
 
         // pick the matches to change
         Pair<PotentialMatch, PotentialMatch> next = iterator.next();
-        Match match1 = idMap.get(next.getLeft().getGroupId());
-        Match match2 = idMap.get(next.getRight().getGroupId());
+        Match match1 = idMap.get(next.left().getGroupId());
+        Match match2 = idMap.get(next.right().getGroupId());
 
         // swap their "confirmed" flag
         matches.add(match1);

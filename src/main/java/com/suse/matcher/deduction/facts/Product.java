@@ -1,10 +1,9 @@
 package com.suse.matcher.deduction.facts;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.kie.api.definition.type.PropertyReactive;
+
+import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * Represents a product that can be matched.
@@ -87,33 +86,28 @@ public class Product {
         return base;
     }
 
-    /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-            .append(id)
-            .toHashCode();
+        return Objects.hash(id);
     }
 
-    /** {@inheritDoc} */
     @Override
-    public boolean equals(Object objIn) {
-        if (!(objIn instanceof Product)) {
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Product other)) {
             return false;
         }
-        Product other = (Product) objIn;
-        return new EqualsBuilder()
-            .append(id, other.id)
-            .isEquals();
+        return Objects.equals(id, other.getId());
     }
 
-    /** {@inheritDoc} */
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-            .append("id", id)
-            .append("productClass", productClass)
-            .append("name", name)
-            .toString();
+        return new StringJoiner(", ", Product.class.getSimpleName() + "[", "]")
+                .add("id=" + id)
+                .add("productClass=" + productClass)
+                .add("name=" + name)
+                .toString();
     }
 }

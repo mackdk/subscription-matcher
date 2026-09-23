@@ -1,10 +1,9 @@
 package com.suse.matcher.deduction.facts;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.kie.api.definition.type.PropertyReactive;
+
+import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * Represents a relationship between a Host and a product because of
@@ -48,34 +47,28 @@ public class HostedProduct {
         return productId;
     }
 
-    /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-            .append(systemId)
-            .append(productId)
-            .toHashCode();
+        return Objects.hash(systemId, productId);
     }
 
-    /** {@inheritDoc} */
     @Override
-    public boolean equals(Object objIn) {
-        if (!(objIn instanceof HostedProduct)) {
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof HostedProduct other)) {
             return false;
         }
-        HostedProduct other = (HostedProduct) objIn;
-        return new EqualsBuilder()
-            .append(systemId, other.systemId)
-            .append(productId, other.productId)
-            .isEquals();
+        return Objects.equals(systemId, other.getSystemId())
+                && Objects.equals(productId, other.getProductId());
     }
 
-    /** {@inheritDoc} */
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-        .append("systemId", systemId)
-        .append("productId", productId)
-        .toString();
+        return new StringJoiner(", ", HostedProduct.class.getSimpleName() + "[", "]")
+                .add("systemId=" + systemId)
+                .add("productId=" + productId)
+                .toString();
     }
 }

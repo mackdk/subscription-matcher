@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import com.suse.matcher.deduction.Drools;
 import com.suse.matcher.deduction.FactConverter;
 import com.suse.matcher.io.JsonIO;
 import com.suse.matcher.io.LoggingBootstrap;
@@ -20,7 +19,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -73,11 +71,6 @@ class MatcherScenariosTest {
         if (loggerContext != null) {
             loggerContext.close();
         }
-    }
-
-    @BeforeEach
-    void init() {
-        Drools.resetIdMap();
     }
 
     /**

@@ -2,7 +2,6 @@ package com.suse.matcher.deduction.rules;
 
 import java.util.List;
 
-import com.suse.matcher.deduction.Drools;
 import com.suse.matcher.deduction.facts.CentGroup;
 import com.suse.matcher.deduction.facts.GroupInInheritedVirtualization;
 import com.suse.matcher.deduction.facts.HostGuest;
@@ -14,6 +13,8 @@ import com.suse.matcher.deduction.facts.Subscription;
 import com.suse.matcher.deduction.facts.Subscription.Policy;
 import com.suse.matcher.deduction.facts.SubscriptionProduct;
 import com.suse.matcher.deduction.facts.System;
+
+global com.suse.matcher.deduction.FactIdGenerator idGenerator;
 
 rule "matchPhysicalOnlySubscription"
     agenda-group "Matchability"
@@ -28,7 +29,7 @@ rule "matchPhysicalOnlySubscription"
             ignored == false
         )
     then
-        int groupId = Drools.generateId($system.getId(), $productId, $subscription.getId());
+        int groupId = idGenerator.generate("CentGroup", $system.getId(), $productId, $subscription.getId());
         insert(new CentGroup(groupId, 100));
         insert(new PotentialMatch($system.getId(), $productId, $subscription.getId(), groupId, groupId));
 end
@@ -46,7 +47,7 @@ rule "matchInstanceSubscription"
             ignored == false
         )
     then
-        int groupId = Drools.generateId($system.getId(), $productId, $subscription.getId());
+        int groupId = idGenerator.generate("CentGroup", $system.getId(), $productId, $subscription.getId());
         insert(new CentGroup(groupId, 100));
         insert(new PotentialMatch($system.getId(), $productId, $subscription.getId(), groupId, groupId));
 end
@@ -68,7 +69,7 @@ rule "matchUnlimitedVirtualizationSubscription"
         )
     then
         Integer consumedQuantity = ($system.getCpus() + $subscription.getCpus() - 1) / $subscription.getCpus();
-        int groupId = Drools.generateId($system.getId(), $subscription.getId());
+        int groupId = idGenerator.generate("PotentialMatch", $system.getId(), $subscription.getId());
         insert(new CentGroup(groupId, consumedQuantity * 100));
         insert(new PotentialMatch($system.getId(), $productId, $subscription.getId(), groupId, groupId));
 end
@@ -81,8 +82,8 @@ rule "matchFreeVirtualizationSubscription"
       HostGuest(hostId == $hostId, $guestId : guestId)
       InstalledProduct(systemId == $guestId, productId == $productId)
     then
-      int groupId = Drools.generateId($hostId, $subscriptionId);
-      int centGroupId = Drools.generateId($guestId, $productId, $subscriptionId);
+      int groupId = idGenerator.generate("PotentialMatch", $hostId, $subscriptionId);
+      int centGroupId = idGenerator.generate("CentGroup", $guestId, $productId, $subscriptionId);
       insert(new CentGroup(centGroupId, 0));
       insert(new PotentialMatch($guestId, $productId, $subscriptionId, centGroupId, groupId));
 end
@@ -113,12 +114,12 @@ rule "matchInheritedVirtualization"
         CentGroup(id == $centGroupId, $cents : cents)
         not GroupInInheritedVirtualization(groupId == $baseGroupId) // prevent infinite re-activation
     then
-        int addonGroupId = Drools.generateId($baseGroupId, $addonSubscriptionId);
+        int addonGroupId = idGenerator.generate("PotentialMatch", $baseGroupId, $addonSubscriptionId);
 
         // CentGroup for potential match with base subscription
-        int baseMatchCentGroupId = Drools.generateId("IV-Base", addonGroupId, $centGroupId);
+        int baseMatchCentGroupId = idGenerator.generate("CentGroup", "IV-Base", addonGroupId, $centGroupId);
         // CentGroup for potential match with addon subscription
-        int addonMatchCentGroupId = Drools.generateId("IV-Addon", addonGroupId, $centGroupId);
+        int addonMatchCentGroupId = idGenerator.generate("CentGroup", "IV-Addon", addonGroupId, $centGroupId);
 
         insert(new CentGroup(baseMatchCentGroupId, $cents));
         insert(new CentGroup(addonMatchCentGroupId, $cents));
@@ -141,7 +142,7 @@ rule "match12Subscription"
         )
         not (HostGuest(hostId == $systemId))
     then
-        int groupId = Drools.generateId($systemId, $productId, $subscriptionId);
+        int groupId = idGenerator.generate("CentGroup", $systemId, $productId, $subscriptionId);
         if ($physical) {
             insert(new CentGroup(groupId, ($system.getCpus() + $subscription.getCpus() - 1) / $subscription.getCpus() * 100));
             insert(new PotentialMatch($system.getId(), $productId, $subscription.getId(), groupId, groupId));

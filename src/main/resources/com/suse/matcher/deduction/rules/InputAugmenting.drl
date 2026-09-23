@@ -1,12 +1,13 @@
 package com.suse.matcher.deduction.rules;
 
-import com.suse.matcher.deduction.Drools;
 import com.suse.matcher.deduction.facts.HostedProduct;
 import com.suse.matcher.deduction.facts.HostGuest;
 import com.suse.matcher.deduction.facts.InstalledProduct;
 import com.suse.matcher.deduction.facts.PenaltyGroup;
 import com.suse.matcher.deduction.facts.System;
 import com.suse.matcher.deduction.facts.VirtualizationGroupMember;
+
+global com.suse.matcher.deduction.FactIdGenerator idGenerator;
 
 rule "generateHostedProduct"
     agenda-group "InputAugmenting"
@@ -32,7 +33,7 @@ rule "generatePenaltyGroups"
         HostGuest($hostId : hostId, $guestId : guestId)
         not VirtualizationGroupMember(guestId == $guestId)
     then
-        int penaltyGroupId = Drools.generateId("host_guest", $hostId);
+        int penaltyGroupId = idGenerator.generate("PenaltyGroup", $hostId);
         insert(new PenaltyGroup(penaltyGroupId, $guestId));
 end
 

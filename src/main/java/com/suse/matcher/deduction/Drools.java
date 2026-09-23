@@ -18,9 +18,14 @@ import java.util.Collection;
  *
  * Deduces facts based on some base facts and rules defined ksession-rules.xml.
  */
-public class Drools {
+public class Drools implements DeductionEngine {
     /** Logger instance. */
     private static final Logger LOGGER = LogManager.getLogger(Drools.class);
+
+    // Use nested holder class pattern to ensure lazy instantiation
+    private static final class KieContainerHolder {
+        private static final KieContainer INSTANCE = KieServices.get().getKieClasspathContainer();
+    }
 
     /** Rule groups corresponding to filenames and agenda group names. */
     private static final String[] RULE_GROUPS = {
@@ -32,24 +37,25 @@ public class Drools {
         "Matchability",
     };
 
-    /** Deduction resulting fact objects. */
-    private final Collection<Object> result;
+    private final FactIdGenerator idGenerator;
 
     /**
-     * Instantiates a Drools instance with the specified base facts.
-     * @param baseFacts fact objects
-     * @param idGenerator the fact id generator
+     * Instantiates a Drools instance with the specified id generator.
+     * @param idGeneratorIn the fact id generator
      */
-    public Drools(Collection<Object> baseFacts, FactIdGenerator idGenerator) {
-        // setup engine
-        KieServices services = KieServices.get();
-        KieContainer container = services.getKieClasspathContainer();
+    public Drools(FactIdGenerator idGeneratorIn) {
+        this.idGenerator = idGeneratorIn;
+    }
 
+    @Override
+    public Collection<Object> deduce(Collection<Object> baseFacts) {
         // start a new session
-        KieSession session = container.newKieSession();
-        session.setGlobal("idGenerator", idGenerator);
+        KieSession session = KieContainerHolder.INSTANCE.newKieSession();
 
         try {
+            // Setup globals
+            session.setGlobal("idGenerator", idGenerator);
+
             // set rule ordering
             Agenda agenda = session.getAgenda();
             for (int i = RULE_GROUPS.length - 1; i >= 0; i--) {
@@ -67,7 +73,7 @@ public class Drools {
             LOGGER.info("Deduction phase took {}ms", System.currentTimeMillis() - start);
 
             // collect results
-            result = new ArrayList<>(session.getObjects());
+            Collection<Object> result = new ArrayList<>(session.getObjects());
 
             LOGGER.info("Found {} potential matches", CollectionUtils.typeStream(result, PotentialMatch.class).count());
             if (LOGGER.isDebugEnabled()) {
@@ -75,18 +81,12 @@ public class Drools {
                     .sorted()
                     .forEach(pm -> LOGGER.debug("{}", pm));
             }
+
+            return result;
         }
         finally {
             // cleanup
             session.dispose();
         }
-    }
-
-    /**
-     * Returns all facts deduced by Drools.
-     * @return the deduced facts
-     */
-    public Collection<Object> getResult() {
-        return result;
     }
 }

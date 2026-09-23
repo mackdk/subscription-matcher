@@ -1,5 +1,6 @@
 package com.suse.matcher;
 
+import com.suse.matcher.deduction.DeductionEngine;
 import com.suse.matcher.deduction.Drools;
 import com.suse.matcher.deduction.FactConverter;
 import com.suse.matcher.deduction.FactIdGenerator;
@@ -10,6 +11,7 @@ import com.suse.matcher.optimization.Assignment;
 import com.suse.matcher.optimization.Match;
 import com.suse.matcher.optimization.MessageCollector;
 import com.suse.matcher.optimization.OptaPlanner;
+import com.suse.matcher.optimization.OptimizationEngine;
 import com.suse.matcher.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -30,6 +32,12 @@ public class Matcher {
     /** true if the matcher is being tested. */
     private final boolean testing;
 
+    private final FactIdGenerator idGenerator;
+
+    private final DeductionEngine deductionEngine;
+
+    private final OptimizationEngine optimizationEngine;
+
     /**
      * Standard constructor.
      *
@@ -37,6 +45,10 @@ public class Matcher {
      */
     public Matcher(boolean testingIn) {
         testing = testingIn;
+
+        idGenerator = new FactIdGenerator();
+        deductionEngine = new Drools(idGenerator);
+        optimizationEngine = new OptaPlanner(testing);
     }
 
     /**
@@ -46,14 +58,11 @@ public class Matcher {
      * @return an object summarizing the match
      */
     public Assignment match(JsonInput input) {
-        FactIdGenerator idGenerator = new FactIdGenerator();
-
         // convert inputs into facts the rule engine can reason about
         Collection<Object> baseFacts = FactConverter.convertToFacts(input, idGenerator);
 
         // activate the rule engine to deduce more facts
-        Drools drools = new Drools(baseFacts, idGenerator);
-        Collection<Object> deducedFacts = drools.getResult();
+        Collection<Object> deducedFacts = deductionEngine.deduce(baseFacts);
 
         // among deductions, the rule engine determines system to subscription "matchability":
         // whether a subscription can be assigned to a system without taking other assignments into account.
@@ -67,15 +76,16 @@ public class Matcher {
         // compute sorted potential matches for caching
         List<PotentialMatch> sortedPotentialMatches = getPotentialMatches(deducedFacts).sorted().distinct().collect(Collectors.toList());
 
-        // activate the CSP solver with all deduced facts as inputs
-        OptaPlanner optaPlanner = new OptaPlanner(
-                new Assignment(matches, deducedFacts, conflictMap, sortedPotentialMatches), testing);
-        Assignment result = optaPlanner.getResult();
+        // Create the unresolved assignment for the optimization engine
+        Assignment unsolved = new Assignment(matches, deducedFacts, conflictMap, sortedPotentialMatches);
+
+        // activate the optimizer with all deduced facts as inputs
+        Assignment solution = optimizationEngine.optimize(unsolved);
 
         // add user messages taking rule engine deductions and CSP solver output into account
-        MessageCollector.addMessages(result);
+        MessageCollector.addMessages(solution);
 
-        return result;
+        return solution;
     }
 
     private Stream<PotentialMatch> getPotentialMatches(Collection<Object> deducedFacts) {

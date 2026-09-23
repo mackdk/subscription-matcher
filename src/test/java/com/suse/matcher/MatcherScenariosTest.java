@@ -51,6 +51,10 @@ class MatcherScenariosTest {
 
     private static LoggerContext loggerContext = null;
 
+    private static Matcher matcher;
+
+    private static JsonIO jsonIO;
+
     // CSV files to be checked
     private static final List<String> CSV_FILES = List.of(
         "message_report.csv",
@@ -58,16 +62,15 @@ class MatcherScenariosTest {
         "unmatched_product_report.csv"
     );
 
-    // Utility to convert from/to JSON
-    private static final JsonIO JSON_IO = new JsonIO();
-
     @BeforeAll
-    static void initLoggerContext() {
+    static void initialize() {
         loggerContext = LoggingBootstrap.initialize(Optional.empty(), Optional.empty());
+        matcher = new Matcher(true);
+        jsonIO = new JsonIO();
     }
 
     @AfterAll
-    static void closeLoggerContext() {
+    static void dispose() {
         if (loggerContext != null) {
             loggerContext.close();
         }
@@ -81,7 +84,6 @@ class MatcherScenariosTest {
     @MethodSource("listScenarios")
     void testScenario(int scenarioNumber, String description) {
         LOGGER.info("Executing {}", description);
-        Matcher matcher = new Matcher(true);
 
         Assignment assignment = matcher.match(getJsonInput(scenarioNumber));
         JsonOutput actualOutput = FactConverter.convertToOutput(assignment);
@@ -172,7 +174,7 @@ class MatcherScenariosTest {
      * @return the provided JSON input for this scenario
      */
     private static JsonInput getJsonInput(int scenarioNumber) {
-        JsonInput input = JSON_IO.loadInput(getContentAsString(scenarioNumber, "input.json"));
+        JsonInput input = jsonIO.loadInput(getContentAsString(scenarioNumber, "input.json"));
         ScenarioValidator.validateInput(input);
 
         return input;
@@ -184,7 +186,7 @@ class MatcherScenariosTest {
      * @return the expected JSON output for this scenario
      */
     private static JsonOutput getJsonOutput(int scenarioNumber) {
-        JsonOutput output = JSON_IO.loadOutput(getContentAsString(scenarioNumber, "output.json"));
+        JsonOutput output = jsonIO.loadOutput(getContentAsString(scenarioNumber, "output.json"));
         ScenarioValidator.validateOutput(output);
 
         return output;
@@ -273,6 +275,6 @@ class MatcherScenariosTest {
      * @param message the message
      */
     private static void assertJsonEquals(Object expected, Object actual, String message) {
-        assertEquals(JSON_IO.toJson(expected), JSON_IO.toJson(actual), message);
+        assertEquals(jsonIO.toJson(expected), jsonIO.toJson(actual), message);
     }
 }

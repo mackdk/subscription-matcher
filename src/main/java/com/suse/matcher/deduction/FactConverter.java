@@ -53,7 +53,7 @@ public class FactConverter {
      * @param input a JSON input data blob
      * @return a collection of facts
      */
-    public static Collection<Object> convertToFacts(JsonInput input) {
+    public static Collection<Object> convertToFacts(JsonInput input, FactIdGenerator idGenerator) {
         Collection<Object> result = new LinkedList<>();
 
         result.add(new Timestamp(input.timestamp()));
@@ -71,7 +71,7 @@ public class FactConverter {
         for (JsonVirtualizationGroup group : input.virtualizationGroups()) {
             for (Long guestId : group.virtualGuestIds()) {
                 result.add(new VirtualizationGroupMember(
-                        Drools.generateId(group.type(), group.id()),
+                        idGenerator.generate(VirtualizationGroupMember.class, group.type(), group.id()),
                         guestId));
             }
         }

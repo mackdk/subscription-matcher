@@ -2,6 +2,7 @@ package com.suse.matcher;
 
 import com.suse.matcher.deduction.Drools;
 import com.suse.matcher.deduction.FactConverter;
+import com.suse.matcher.deduction.FactIdGenerator;
 import com.suse.matcher.deduction.facts.InstalledProduct;
 import com.suse.matcher.deduction.facts.PotentialMatch;
 import com.suse.matcher.io.json.JsonInput;
@@ -45,11 +46,13 @@ public class Matcher {
      * @return an object summarizing the match
      */
     public Assignment match(JsonInput input) {
+        FactIdGenerator idGenerator = new FactIdGenerator();
+
         // convert inputs into facts the rule engine can reason about
-        Collection<Object> baseFacts = FactConverter.convertToFacts(input);
+        Collection<Object> baseFacts = FactConverter.convertToFacts(input, idGenerator);
 
         // activate the rule engine to deduce more facts
-        Drools drools = new Drools(baseFacts);
+        Drools drools = new Drools(baseFacts, idGenerator);
         Collection<Object> deducedFacts = drools.getResult();
 
         // among deductions, the rule engine determines system to subscription "matchability":

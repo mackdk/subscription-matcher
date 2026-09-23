@@ -11,11 +11,7 @@ import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.Agenda;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Facade on the Drools rule engine.
@@ -36,23 +32,22 @@ public class Drools {
         "Matchability",
     };
 
-    /** Map to fact ids, see generateId(). */
-    private static final Map<List<Object>, Integer> ID_MAP = new HashMap<>();
-
     /** Deduction resulting fact objects. */
     private final Collection<Object> result;
 
     /**
      * Instantiates a Drools instance with the specified base facts.
      * @param baseFacts fact objects
+     * @param idGenerator the fact id generator
      */
-    public Drools(Collection<Object> baseFacts) {
+    public Drools(Collection<Object> baseFacts, FactIdGenerator idGenerator) {
         // setup engine
         KieServices services = KieServices.get();
         KieContainer container = services.getKieClasspathContainer();
 
         // start a new session
         KieSession session = container.newKieSession();
+        session.setGlobal("idGenerator", idGenerator);
 
         try {
             // set rule ordering
@@ -93,24 +88,5 @@ public class Drools {
      */
     public Collection<Object> getResult() {
         return result;
-    }
-
-    /**
-     * reset the idMap
-     */
-    public static void resetIdMap() {
-        ID_MAP.clear();
-    }
-
-    /**
-     * Returns a sequential id which is unique to the specified data.
-     *
-     * Equal input data always results in the same id.
-     *
-     * @param objects objects to generate this id from
-     * @return a new id
-     */
-    public static int generateId(Object... objects) {
-        return ID_MAP.computeIfAbsent(Arrays.asList(objects), k -> ID_MAP.size());
     }
 }

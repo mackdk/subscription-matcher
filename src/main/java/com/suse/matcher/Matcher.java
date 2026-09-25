@@ -13,6 +13,10 @@ import com.suse.matcher.optimization.MessageCollector;
 import com.suse.matcher.optimization.OptaPlanner;
 import com.suse.matcher.optimization.OptimizationEngine;
 import com.suse.matcher.util.CollectionUtils;
+import com.suse.matcher.util.ExecutionTimer;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,6 +32,8 @@ import java.util.stream.Stream;
  * Matches a list of systems to a list of subscriptions.
  */
 public class Matcher {
+
+    private static final Logger LOGGER = LogManager.getLogger(Matcher.class);
 
     /** true if the matcher is being tested. */
     private final boolean testing;
@@ -47,8 +53,8 @@ public class Matcher {
         testing = testingIn;
 
         idGenerator = new FactIdGenerator();
-        deductionEngine = new Drools(idGenerator);
-        optimizationEngine = new OptaPlanner(testing);
+        deductionEngine = ExecutionTimer.measure("Initialize Drools",  () -> new Drools(idGenerator));
+        optimizationEngine = ExecutionTimer.measure("Initialize OptaPlanner",  () -> new OptaPlanner(testing));
     }
 
     /**

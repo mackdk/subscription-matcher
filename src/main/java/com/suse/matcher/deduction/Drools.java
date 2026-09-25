@@ -2,6 +2,7 @@ package com.suse.matcher.deduction;
 
 import com.suse.matcher.deduction.facts.PotentialMatch;
 import com.suse.matcher.util.CollectionUtils;
+import com.suse.matcher.util.ExecutionTimer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -68,9 +69,7 @@ public class Drools implements DeductionEngine {
             }
 
             // start deduction engine
-            long start = System.currentTimeMillis();
-            session.fireAllRules();
-            LOGGER.info("Deduction phase took {}ms", System.currentTimeMillis() - start);
+            ExecutionTimer.measure("Deduction phase", () -> session.fireAllRules());
 
             // collect results
             Collection<Object> result = new ArrayList<>(session.getObjects());

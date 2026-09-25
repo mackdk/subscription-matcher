@@ -2,6 +2,7 @@ package com.suse.matcher.optimization;
 
 import com.suse.matcher.optimization.facts.OneTwoPenalty;
 import com.suse.matcher.util.CollectionUtils;
+import com.suse.matcher.util.ExecutionTimer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -47,10 +48,8 @@ public class OptaPlanner implements OptimizationEngine {
         }
 
         // solve problem
-        long start = System.currentTimeMillis();
-        solver.solve(unsolved);
+        ExecutionTimer.measure("Optimization phase", () -> solver.solve(unsolved));
 
-        LOGGER.info("Optimization phase took {}ms", System.currentTimeMillis() - start);
         Assignment solution = solver.getBestSolution();
         LOGGER.info("{} matches confirmed", solution.getMatches().stream().filter(m -> m.isConfirmed()).count());
 

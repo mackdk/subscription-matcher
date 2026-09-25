@@ -7,6 +7,7 @@ import com.suse.matcher.io.cli.Arguments;
 import com.suse.matcher.io.cli.CommandLineArguments;
 import com.suse.matcher.io.json.JsonInput;
 import com.suse.matcher.optimization.Assignment;
+import com.suse.matcher.util.ExecutionTimer;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
@@ -41,23 +42,24 @@ public class Main {
             logger.info("Starting subscription-matcher process");
 
             try {
-                // create output writing objects
-                OutputWriter writer = new OutputWriter(arguments.getOutputDirectory(), arguments.getDelimiter());
+                ExecutionTimer.measure("Whole execution", () -> {
 
-                // load input data
-                String inputString = new String(arguments.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+                    // create output writing objects
+                    OutputWriter writer = new OutputWriter(arguments.getOutputDirectory(), arguments.getDelimiter());
 
-                // save a copy of input data in the output directory
-                writer.writeJsonInput(inputString);
+                    // load input data
+                    String inputString = new String(arguments.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
 
-                // do the matching
-                JsonInput input = new JsonIO().loadInput(inputString);
-                Assignment assignment = new Matcher(false).match(input);
+                    // save a copy of input data in the output directory
+                    writer.writeJsonInput(inputString);
 
-                // write output data
-                writer.writeOutput(assignment, arguments.getLoggingLevel());
+                    // do the matching
+                    JsonInput input = new JsonIO().loadInput(inputString);
+                    Assignment assignment = new Matcher(false).match(input);
 
-                logger.info("Whole execution took {}ms", System.currentTimeMillis() - start);
+                    // write output data
+                    writer.writeOutput(assignment, arguments.getLoggingLevel());
+                });
             }
             catch (IOException ex) {
                 logger.error("Unexpected I/O error", ex);
